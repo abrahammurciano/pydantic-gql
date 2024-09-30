@@ -1,0 +1,23 @@
+
+
+name: Tests
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.12"
+      - name: Get Poetry
+        run: pip install poetry
+      - name: Install
+        run: poetry install
+      - name: Run Tests
+        run: poetry run pytest tests/

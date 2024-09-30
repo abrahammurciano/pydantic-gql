@@ -1,0 +1,29 @@
+name: Publish
+
+on:
+  release:
+    types:
+      - created
+
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.12"
+      - name: Get Poetry
+        run: pip install poetry
+      - name: Set Version
+        run: poetry version $(echo ${{ github.event.release.tag_name }} | cut -d 'v' -f 2)
+      - name: Build Package
+        run: poetry build
+      - name: Check Build
+        run: pip install dist/*.whl
+      - name: Set environment variables for conda build
+        run: echo "POETRY_VERSION=$(poetry version -s)" >> $GITHUB_ENV
+      - name: Publish Pip Package
+        run: poetry publish -u __token__ -p ${{ secrets.PYPI_TOKEN }}
