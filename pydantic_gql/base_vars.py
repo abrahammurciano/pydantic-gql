@@ -1,17 +1,18 @@
 from __future__ import annotations
 
+from abc import ABCMeta
 from typing import (
     Any,
     ClassVar,
-    Iterable,
     Iterator,
     Mapping,
+    cast,
     dataclass_transform,
     get_origin,
     get_type_hints,
 )
 
-from pydantic_gql.var import Var
+from .var import NOTSET, Var
 
 
 def _is_var(annotation: Any) -> bool:
@@ -20,58 +21,53 @@ def _is_var(annotation: Any) -> bool:
     return origin is not ClassVar and issubclass(origin or annotation, Var)
 
 
-@dataclass_transform(eq_default=False, field_specifiers=(Var,))
-class BaseVarsMeta(type, Iterable[Var[Any]]):
-    def __iter__(self: type[BaseVars]) -> Iterator[Var[Any]]:
-        return iter(self.__variables__.values())
+@dataclass_transform(eq_default=False, field_specifiers=(Var,), kw_only_default=True)
+class BaseVarsMeta(ABCMeta):
+    # Can't actually inherit from Iterable. https://discuss.python.org/t/abcmeta-change-isinstancecheck-of-additional-parent-class/19908
+    def __iter__(self) -> Iterator[Var[Any]]:
+        return iter(cast(type[BaseVars], self).__variables__.values())
 
 
-class BaseVars(Mapping[Var[Any], Any], metaclass=BaseVarsMeta):
+class BaseVars(Mapping[str, Any], metaclass=BaseVarsMeta):
     __variables__: ClassVar[Mapping[str, Var[Any]]]
 
     def __init_subclass__(cls) -> None:
         cls.__variables__ = {}
-        for name, annotation in get_type_hints(cls).items():
+        for key, annotation in get_type_hints(cls).items():
             if not _is_var(annotation):
                 continue
-            value = getattr(cls, name, None)
+            value = getattr(cls, key, NOTSET)
             if isinstance(value, Var):
-                name = value.name or name
-                cls.__variables__[name] = Var(
-                    name, value.default, value.var_type or annotation.__args__[0]
-                )
+                value.set_default_name(key)
+                value.set_default_type(annotation.__args__[0])
+                cls.__variables__[key] = value
             else:
-                cls.__variables__[name] = Var(name, value, annotation.__args__[0])
-        for name, var in cls.__variables__.items():
-            setattr(cls, name, var)
+                cls.__variables__[key] = Var(key, value, annotation.__args__[0])
+        for key, var in cls.__variables__.items():
+            setattr(cls, key, var)
 
-    def __init__(self, **kwargs: Any) -> None:
+    def __init__(self, *args: object, **kwargs: Any) -> None:
+        if args:
+            raise TypeError(f"{type(self).__name__} takes no positional arguments")
         self.__values__ = {
-            name: kwargs.get(name, var.default)
-            for name, var in self.__variables__.items()
+            var.name: _get_value(key, kwargs, var)
+            for key, var in self.__variables__.items()
         }
 
-    def __iter__(self) -> Iterator[Var[Any]]:
-        return iter(self.__variables__.values())
+    def __iter__(self) -> Iterator[str]:
+        return iter(self.__values__)
+
+    def __getitem__(self, name: str, /) -> Any:
+        return self.__values__[name]
+
+    def __len__(self) -> int:
+        return len(self.__values__)
 
 
-# Example usage
-class Vars(BaseVars):
-    var1: Var[str]
-    var2: Var[int] = Var(default=42)
-    var3: Var[int] = Var(default=69, type=int, name="thirdVar")
-
-
-my_vars = Vars(var1="value-1")
-
-assert my_vars.var1 == "value-1", my_vars.var1
-assert isinstance(Vars.var1, Var), Vars.var1
-assert my_vars.var2 == 42, my_vars.var2
-assert isinstance(Vars.__variables__, dict), Vars.__variables__
-assert isinstance(my_vars.__variables__, dict), my_vars.__variables__
-
-other_vars = Vars(var1="value-2")
-other_vars.var2 = 100
-other_vars.var3 = 200
-assert my_vars.var2 == 42, my_vars.var2
-assert my_vars.var3 == 69, my_vars.var3
+def _get_value(key: str, kwargs: Mapping[str, Any], var: Var[Any]) -> Any:
+    if key in kwargs:
+        return kwargs[key]
+    try:
+        return var.default
+    except ValueError:
+        raise TypeError(f"missing required variable {key!r}") from None

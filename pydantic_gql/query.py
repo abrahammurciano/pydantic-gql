@@ -4,9 +4,9 @@ from typing import Any, Iterable, Mapping, Self
 
 from pydantic import BaseModel
 
-from pydantic_gql.var import Var
-
 from .gql_field import GqlField
+from .values import GqlValue
+from .var import Var
 
 
 class Query:
@@ -90,8 +90,8 @@ class Query:
         model: type[BaseModel],
         field_name: str | None = None,
         query_name: str | None = None,
-        variables: Mapping[Var[Any], Any] = {},
-        args: Mapping[str, object] = {},
+        variables: Iterable[Var[Any]] = (),
+        args: Mapping[str, GqlValue] = {},
     ) -> Self:
         """Create a query with a single top-level field whose subfields are defined by a Pydantic model.
 
@@ -151,8 +151,9 @@ class Query:
         )
 
     def __format__(self, format_spec: str) -> str:
-        from .query_formatter import QueryFormatter
+        from .builders.query_builder import QueryBuilder
 
+        indent: bool | int | str
         if format_spec in ("", "indent"):
             indent = True
         elif format_spec == "noindent":
@@ -165,7 +166,7 @@ class Query:
             raise ValueError(
                 f"Invalid format specifier: {format_spec!r}. Must be one of '', 'indent', 'noindent', whitespace, or a positive integer."
             )
-        return QueryFormatter(indent=indent).format(self)
+        return QueryBuilder(indent=indent).build(self)
 
     def __str__(self) -> str:
         return self.__format__("")
