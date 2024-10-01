@@ -29,6 +29,30 @@ class BaseVarsMeta(ABCMeta):
 
 
 class BaseVars(Mapping[str, Any], metaclass=BaseVarsMeta):
+    """Base class for classes that define a set of variables for a GraphQL query.
+
+    # Usage
+
+    To define a set of variables, subclass `BaseVars` and define class attributes with type hints of `Var[T]` where `T` is the type of the variable. Optionally, you can assign an instance of `Var` to provide a default value or to override the name and type of the variable.
+
+    If no `Var` instance is assigned, then the variable name will be extracted from the class attribute name, the variable type will be extracted from the type hint, and the default will be `None` if the type hint allows it (e.g. `Optional[T]` or `T | None`). If the type hint does not allow `None`, then the variable will be required and an error will be raised if it is not provided.
+
+    If a `Var` instance is assigned, it may specify a default value for the variable with the keyword argument `default`. If the keyword argument `name` is provided, it will override the variable name. This is useful for variables that have a different name in the GraphQL query than in the Python code, e.g. `local_name: Var[str] = Var(name="remoteName")` will be treated as `remoteName` in the GraphQL query but as an attribute `local_name` in the Python code.
+
+    ```python
+    from pydantic_gql import BaseVars, Var
+
+    class MyVars(BaseVars):
+        id: Var[int]
+        optional: Var[str | None]
+        default: Var[str] = Var(default="default value")
+        local_name: Var[str] = Var(name="remoteName")
+        many: Var[list[str]]
+    ```
+
+    The `MyVars` class is itself an iterable of `Var`s. Instances of `MyVars` have values and is a mapping from variable name to value.
+    """
+
     __variables__: ClassVar[Mapping[str, Var[Any]]]
 
     def __init_subclass__(cls) -> None:
