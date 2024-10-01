@@ -1,29 +1,57 @@
 from dataclasses import dataclass, field
-from io import StringIO
 from typing import Iterable, Mapping, Self, Sequence, get_args, get_origin
 
 from pydantic import BaseModel
 from pydantic.fields import FieldInfo
 
+from .values import GqlValue
+
 
 @dataclass
 class GqlField:
+    """A GraphQL field.
+
+    This class is used to represent a field in a GraphQL query. Fields can have arguments and subfields.
+
+    Args:
+        name: The name of the field.
+        args: A mapping of argument names to argument values.
+        fields: A sequence of subfields.
+    """
+
     name: str
-    remote_name: str | None = None
-    args: Mapping[str, object] = field(default_factory=dict)
+    """The name of the field."""
+
+    args: Mapping[str, GqlValue] = field(default_factory=dict)
+    """A mapping of argument names to argument values for the field."""
+
     fields: Sequence[Self] = ()
+    """A sequence of subfields for the field."""
 
     @classmethod
     def from_model(
         cls,
         model: type[BaseModel],
         name: str | None = None,
-        args: Mapping[str, object] = {},
+        args: Mapping[str, GqlValue] = {},
     ) -> Self:
+        """Create a `GqlField` from a Pydantic model.
+
+        This method will create a `GqlField` with the same name as the model, and with fields corresponding to the model's fields.
+
+        Args:
+            model: The Pydantic model to create a field from.
+            name: The name of the field. If not provided, the name of the model will be used.
+            args: A mapping of argument names to argument values for the field.
+
+        Returns:
+            A `GqlField` representing the model.
+        """
         return cls(name or model.__name__, fields=cls.fields_of_model(model), args=args)
 
     @classmethod
     def fields_of_model(cls, model: type[BaseModel]) -> Sequence[Self]:
+        """Get the GraphQL fields corresponding to a Pydantic model."""
         return tuple(
             cls.from_pydantic_field(name, field)
             for name, field in model.model_fields.items()
@@ -31,25 +59,16 @@ class GqlField:
 
     @classmethod
     def from_pydantic_field(cls, name: str, field: FieldInfo) -> Self:
+        """Create a `GqlField` from a Pydantic field."""
         submodel = _model_of(field)
         return cls(
-            name=name,
-            fields=cls.fields_of_model(submodel) if submodel else (),
-            remote_name=(
+            name=(
                 field.validation_alias
                 if isinstance(field.validation_alias, str)
-                else None
+                else name
             ),
+            fields=cls.fields_of_model(submodel) if submodel else (),
         )
-
-    def __str__(self) -> str:
-        result = StringIO()
-        result.write(self.name)
-        if self.remote_name:
-            result.write(f": {self.remote_name}")
-        if self.fields:
-            result.write(f" {{{', '.join(str(f) for f in self.fields)}}}")
-        return result.getvalue()
 
 
 def _model_of(field: FieldInfo) -> type[BaseModel] | None:
