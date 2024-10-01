@@ -25,6 +25,14 @@ NOTSET: Any = object()
 
 
 class Var(Generic[T]):
+    """A variable definition for a GraphQL query.
+
+    Args:
+        name: The name of the variable. If used as a class attribute on a `BaseVars` subclass, the name will be extracted from the attribute name if not provided.
+        default: The default value of the variable. If the type annotation allows `None`, the default value will be `None` if not provided. Otherwise, the variable will be considered required.
+        type: The python type of the variable. If used as a class attribute on a `BaseVars` subclass, the type will be extracted from the type annotation if not provided. It can also be extracted from the type annotation used when creating the `Var` instance, e.g. `Var[str]("name")`.
+    """
+
     def __init__(
         self,
         name: str | None = None,
@@ -56,7 +64,7 @@ class Var(Generic[T]):
     def required(self) -> bool:
         """Whether the variable is required.
 
-        A variable is required if (1) no default value is set *and* (2) the type annotation is not Optional.
+        A variable is required if (1) no default value is set *and* (2) the type annotation does not allow None.
         """
         if self._default is not NOTSET:
             return False
@@ -64,7 +72,10 @@ class Var(Generic[T]):
 
     @property
     def default(self) -> T:
-        """The default value of the variable."""
+        """The default value of the variable.
+
+        If the variable is required, accessing this property will raise a `ValueError`.
+        """
         if not self.required and self._default is NOTSET:
             return cast(T, None)
         if self.required:
