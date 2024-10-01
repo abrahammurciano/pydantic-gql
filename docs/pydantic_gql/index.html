@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.1">
+<title>pydantic_gql API documentation</title>
+<meta name="description" content="pydantic-gql
+A simple GraphQL query builder based on Pydantic models …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Package <code>pydantic_gql</code></h1>
+</header>
+<section id="section-intro">
+<h1 id="pydantic-gql">pydantic-gql</h1>
+<p>A simple GraphQL query builder based on Pydantic models</p>
+<h2 id="installation">Installation</h2>
+<p>You can install this package with pip.</p>
+<pre><code class="language-sh">$ pip install pydantic-gql
+</code></pre>
+<h2 id="links">Links</h2>
+<p><a href="https://abrahammurciano.github.io/pydantic-gql"><img alt="Documentation" src="https://img.shields.io/badge/Documentation-C61C3E?style=for-the-badge&amp;logo=Read+the+Docs&amp;logoColor=%23FFFFFF"></a></p>
+<p><a href="https://github.com/abrahammurciano/pydantic-gql.git"><img alt="Source Code - GitHub" src="https://img.shields.io/badge/Source_Code-GitHub-181717?style=for-the-badge&amp;logo=GitHub&amp;logoColor=%23FFFFFF"></a></p>
+<p><a href="https://pypi.org/project/pydantic-gql/"><img alt="PyPI - pydantic-gql" src="https://img.shields.io/badge/PyPI-pydantic_gql-006DAD?style=for-the-badge&amp;logo=PyPI&amp;logoColor=%23FFD242"></a></p>
+<h2 id="usage">Usage</h2>
+<p>To use <code>pydantic-gql</code>, you need to define your Pydantic models and then use them to build GraphQL queries. The core class you'll interact with is the <code><a title="pydantic_gql.Query" href="#pydantic_gql.Query">Query</a></code> class.</p>
+<h3 id="defining-pydantic-models">Defining Pydantic Models</h3>
+<p>First, define your Pydantic models that represent the data structure of your GraphQL schema.</p>
+<pre><code class="language-python">from pydantic import BaseModel
+
+class Group(BaseModel):
+    id: int
+    name: str
+
+class User(BaseModel):
+    id: int
+    name: str
+    groups: list[Group]
+</code></pre>
+<h3 id="building-a-query">Building a Query</h3>
+<p>Most GraphQL queries contain a single top-level field. Since this is the most common use case, this library provides <code><a title="pydantic_gql.Query.from_model" href="#pydantic_gql.Query.from_model">Query.from_model()</a></code> as a convenience method to create a query with one top-level field whose subfields are defined by the Pydantic model.</p>
+<pre><code class="language-python">from pydantic_gql import Query
+
+query = Query.from_model(User)
+</code></pre>
+<p>This will create a query that looks like this:</p>
+<pre><code class="language-graphql">query User{
+  User {
+    id,
+    name,
+    groups {
+      id,
+      name,
+    },
+  },
+}
+</code></pre>
+<p>This method also provides parameters to customise the query, such as the query name, field name, variables (see <a href="#using-variables">Using Variables</a> for examples with variables), and arguments. Here's a more complex example:</p>
+<pre><code class="language-python">query = Query.from_model(
+    User,
+    query_name=&quot;GetUser&quot;,
+    field_name=&quot;users&quot;,
+    arguments={&quot;id&quot;: 1},
+)
+</code></pre>
+<p>This will create a query that looks like this:</p>
+<pre><code class="language-graphql">query GetUser{
+  users(id: 1) {
+    id,
+    name,
+    groups {
+      id,
+      name,
+    },
+  },
+}
+</code></pre>
+<h3 id="generating-the-query-string">Generating the Query String</h3>
+<p>To get the actual GraphQL query as a string that you can send to your server, simply convert the <code><a title="pydantic_gql.Query" href="#pydantic_gql.Query">Query</a></code> object to a string.</p>
+<pre><code class="language-python">query_string = str(query)
+</code></pre>
+<p>You can control the indentation of the query string by using <code>format()</code> instead of <code>str()</code>. Valid values for the format specifier are:</p>
+<ul>
+<li><code>indent</code> - The default. Indent the query string with two spaces.</li>
+<li><code>noindent</code> - Do not indent the query string. The result will be a single line.</li>
+<li>A number - Indent the query string with the specified number of spaces.</li>
+<li>A whitespace string - Indent the query string with the specified string, e.g. <code>\t</code>.</li>
+</ul>
+<pre><code class="language-python">query_string = format(query, '\t')
+</code></pre>
+<h3 id="using-variables">Using Variables</h3>
+<p>A GraphQL query can define variables at the top and then reference them throughout the rest of the query. Then when the query is sent to the server, the variables are passed in a separate dictionary.</p>
+<p>To define variables in a query, first create a class that inherits from <code><a title="pydantic_gql.BaseVars" href="#pydantic_gql.BaseVars">BaseVars</a></code> and define the variables as attributes.</p>
+<pre><code class="language-python">from pydantic_gql import BaseVars
+
+class UserVars(BaseVars):
+    age: Var[int]
+    group: Var[str | None]
+    is_admin: Var[bool] = Var(default=False)
+</code></pre>
+<p>You can pass the class itself to the <code><a title="pydantic_gql.Query.from_model" href="#pydantic_gql.Query.from_model">Query.from_model()</a></code> method to include the variables in the query. You can also reference the class attributes in the query arguments directly.</p>
+<pre><code class="language-python">query = Query.from_model(
+    User,
+    variables=UserVars,
+    args={&quot;age&quot;: UserVars.age, &quot;group&quot;: UserVars.group, &quot;isAdmin&quot;: UserVars.is_admin},
+)
+</code></pre>
+<p>This will create a query that looks like this:</p>
+<pre><code class="language-graphql">query User($age: Int!, $group: String, $isAdmin: Boolean = false){
+  User(age: $age, group: $group, isAdmin: $isAdmin) {
+    id,
+    name,
+    groups {
+      id,
+      name,
+    },
+  },
+}
+</code></pre>
+<p>When you want to send the query, you can instantiate the variables class, which itself is a <code>Mapping</code> of variable names to values, and pass it to your preferred HTTP client.</p>
+<pre><code class="language-python">variables = UserVars(age=18, group=&quot;admin&quot;, is_admin=True)
+httpx.post(..., json={&quot;query&quot;: str(query), &quot;variables&quot;: variables})
+</code></pre>
+<h3 id="more-complex-queries">More Complex Queries</h3>
+<p>Sometimes you may need to build more complex queries than the ones we've seen so far. For example, you may need to include multiple top-level fields, or you may need to provide arguments to some deeply nested fields.</p>
+<p>In these cases, you can build the query manually with the <code><a title="pydantic_gql.Query" href="#pydantic_gql.Query">Query</a></code> constructor. The constructor takes the query name followed by any number of <code><a title="pydantic_gql.GqlField" href="#pydantic_gql.GqlField">GqlField</a></code> objects, then optionally <code>variables</code> as a keyword argument.</p>
+<p><code><a title="pydantic_gql.GqlField" href="#pydantic_gql.GqlField">GqlField</a></code>s themselves can also be constructed with their <code>from_model()</code> convenience method or manually with their constructor.</p>
+<p>Here's an example of a more complex query:</p>
+<pre><code class="language-python">from pydantic import BaseModel, Field
+from pydantic_gql import Query, GqlField, BaseVars
+
+class Vars(BaseVars):
+    min_size: Var[int] = Var(default=0)
+    groups_per_user: Var[int | None]
+
+class PageInfo(BaseModel):
+    has_next_page: bool = Field(alias=&quot;hasNextPage&quot;)
+    end_cursor: str | None = Field(alias=&quot;endCursor&quot;)
+
+class GroupEdge(BaseModel):
+    node: Group
+    cursor: str
+
+class GroupConnection(BaseModel):
+    edges: list[GroupEdge]
+    page_info: PageInfo = Field(alias=&quot;pageInfo&quot;)
+
+query = Query(
+    &quot;GetUsersAndGroups&quot;,
+    GqlField(
+        name=&quot;users&quot;,
+        args={&quot;minAge&quot;: 18},
+        fields=(
+            GqlField(&quot;id&quot;),
+            GqlField(&quot;name&quot;),
+            GqlField.from_model(GroupConnection, &quot;groups&quot;, args={&quot;first&quot;: Vars.groups_per_user}),
+        ),
+    )
+    GqlField.from_model(Group, &quot;groups&quot;, args={&quot;minSize&quot;: Vars.min_size}),
+    variables=Vars,
+)
+</code></pre>
+<p>This will create a query that looks like this:</p>
+<pre><code class="language-graphql">query GetUsersAndGroups($min_size: Int = 0, $groups_per_user: Int){
+  users(minAge: 18) {
+    id,
+    name,
+    groups(first: $groups_per_user) {
+      edges {
+        node {
+          id,
+          name,
+        },
+        cursor,
+      },
+      pageInfo {
+        hasNextPage,
+        endCursor,
+      },
+    },
+  },
+  groups(minSize: $min_size) {
+    id,
+    name,
+  },
+}
+</code></pre>
+<h3 id="connections-pagination">Connections (Pagination)</h3>
+<p>The previous example demonstrates how to build a query that uses pagination. However, since pagination is a common pattern (see the <a href="https://relay.dev/graphql/connections.htm">GraphQL Connections Specification</a>), this library provides a <code>Connection</code> class which is generic over the node type. You can use this class to easily build pagination queries.</p>
+<p>Here's an example of how to use the <code>Connection</code> class:</p>
+<pre><code class="language-python">from pydantic_gql.connections import Connection
+
+query = Query.from_model(
+    Connection[User],
+    &quot;users&quot;,
+    args={&quot;first&quot;: 10},
+)
+</code></pre>
+<p>This will create a query that looks like this:</p>
+<pre><code class="language-graphql">query User{
+  users(first: 10) {
+    edges {
+      node {
+        id,
+        name,
+        groups {
+          id,
+          name,
+        },
+      },
+      cursor,
+    },
+    pageInfo {
+      hasNextPage,
+      endCursor,
+    },
+  },
+}
+</code></pre>
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="pydantic_gql.base_vars" href="base_vars.html">pydantic_gql.base_vars</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="pydantic_gql.builders" href="builders/index.html">pydantic_gql.builders</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="pydantic_gql.connections" href="connections.html">pydantic_gql.connections</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="pydantic_gql.gql_field" href="gql_field.html">pydantic_gql.gql_field</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="pydantic_gql.query" href="query.html">pydantic_gql.query</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="pydantic_gql.values" href="values.html">pydantic_gql.values</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="pydantic_gql.var" href="var.html">pydantic_gql.var</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="pydantic_gql.BaseVars"><code class="flex name class">
+<span>class <span class="ident">BaseVars</span></span>
+<span>(</span><span>*args: object, **kwargs: Any)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A Mapping is a generic container for associating key/value
+pairs.</p>
+<p>This class provides concrete generic implementations of all
+methods except for <strong>getitem</strong>, <strong>iter</strong>, and <strong>len</strong>.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>collections.abc.Mapping</li>
+<li>collections.abc.Collection</li>
+<li>collections.abc.Sized</li>
+<li>collections.abc.Iterable</li>
+<li>collections.abc.Container</li>
+<li>typing.Generic</li>
+</ul>
+</dd>
+<dt id="pydantic_gql.Expr"><code class="flex name class">
+<span>class <span class="ident">Expr</span></span>
+<span>(</span><span>value: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An explicit expression for an argument in a GraphQL query.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>value</code></strong></dt>
+<dd>The string representation of the expression in GraphQL.</dd>
+</dl></div>
+</dd>
+<dt id="pydantic_gql.GqlField"><code class="flex name class">
+<span>class <span class="ident">GqlField</span></span>
+<span>(</span><span>name: str, args: Mapping[str, Union[str, int, float, bool, ForwardRef(None), Iterable[Any], <a title="pydantic_gql.var.Var" href="var.html#pydantic_gql.var.Var">Var</a>[Any], <a title="pydantic_gql.values.Expr" href="values.html#pydantic_gql.values.Expr">Expr</a>]] = &lt;factory&gt;, fields: Sequence[Self] = ())</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A GraphQL field.</p>
+<p>This class is used to represent a field in a GraphQL query. Fields can have arguments and subfields.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>The name of the field.</dd>
+<dt><strong><code>args</code></strong></dt>
+<dd>A mapping of argument names to argument values.</dd>
+<dt><strong><code>fields</code></strong></dt>
+<dd>A sequence of subfields.</dd>
+</dl></div>
+<h3>Class variables</h3>
+<dl>
+<dt id="pydantic_gql.GqlField.args"><code class="name">var <span class="ident">args</span> : Mapping[str, Union[str, int, float, bool, ForwardRef(None), Iterable[Any], <a title="pydantic_gql.var.Var" href="var.html#pydantic_gql.var.Var">Var</a>[Any], <a title="pydantic_gql.values.Expr" href="values.html#pydantic_gql.values.Expr">Expr</a>]]</code></dt>
+<dd>
+<div class="desc"><p>A mapping of argument names to argument values for the field.</p></div>
+</dd>
+<dt id="pydantic_gql.GqlField.fields"><code class="name">var <span class="ident">fields</span> : Sequence[Self]</code></dt>
+<dd>
+<div class="desc"><p>A sequence of subfields for the field.</p></div>
+</dd>
+<dt id="pydantic_gql.GqlField.name"><code class="name">var <span class="ident">name</span> : str</code></dt>
+<dd>
+<div class="desc"><p>The name of the field.</p></div>
+</dd>
+</dl>
+<h3>Static methods</h3>
+<dl>
+<dt id="pydantic_gql.GqlField.fields_of_model"><code class="name flex">
+<span>def <span class="ident">fields_of_model</span></span>(<span>model: type[pydantic.main.BaseModel]) ‑> Sequence[Self]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the GraphQL fields corresponding to a Pydantic model.</p></div>
+</dd>
+<dt id="pydantic_gql.GqlField.from_model"><code class="name flex">
+<span>def <span class="ident">from_model</span></span>(<span>model: type[pydantic.main.BaseModel], name: str | None = None, args: Mapping[str, Union[str, int, float, bool, ForwardRef(None), Iterable[Any], <a title="pydantic_gql.var.Var" href="var.html#pydantic_gql.var.Var">Var</a>[Any], <a title="pydantic_gql.values.Expr" href="values.html#pydantic_gql.values.Expr">Expr</a>]] = {}) ‑> Self</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create a <code><a title="pydantic_gql.GqlField" href="#pydantic_gql.GqlField">GqlField</a></code> from a Pydantic model.</p>
+<p>This method will create a <code><a title="pydantic_gql.GqlField" href="#pydantic_gql.GqlField">GqlField</a></code> with the same name as the model, and with fields corresponding to the model's fields.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>model</code></strong></dt>
+<dd>The Pydantic model to create a field from.</dd>
+<dt><strong><code>name</code></strong></dt>
+<dd>The name of the field. If not provided, the name of the model will be used.</dd>
+<dt><strong><code>args</code></strong></dt>
+<dd>A mapping of argument names to argument values for the field.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A <code><a title="pydantic_gql.GqlField" href="#pydantic_gql.GqlField">GqlField</a></code> representing the model.</p></div>
+</dd>
+<dt id="pydantic_gql.GqlField.from_pydantic_field"><code class="name flex">
+<span>def <span class="ident">from_pydantic_field</span></span>(<span>name: str, field: pydantic.fields.FieldInfo) ‑> Self</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create a <code><a title="pydantic_gql.GqlField" href="#pydantic_gql.GqlField">GqlField</a></code> from a Pydantic field.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="pydantic_gql.Query"><code class="flex name class">
+<span>class <span class="ident">Query</span></span>
+<span>(</span><span>name: str, *fields: <a title="pydantic_gql.GqlField" href="#pydantic_gql.GqlField">GqlField</a>, variables: Iterable[<a title="pydantic_gql.Var" href="#pydantic_gql.Var">Var</a>[Any]] = ())</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A GraphQL query object, which is a collection of fields to be queried from a GraphQL API.</p>
+<h1 id="usage">Usage</h1>
+<p>To create simple query with one top-level field such as <code>books</code>, first create a Pydantic model for the <code>Book</code> type, then create a <code><a title="pydantic_gql.Query" href="#pydantic_gql.Query">Query</a></code> object with the <code><a title="pydantic_gql.Query.from_model" href="#pydantic_gql.Query.from_model">Query.from_model()</a></code> constructor.</p>
+<pre><code class="language-python">class Book(BaseModel):
+    title: str
+    author: str
+
+query = Query.from_model(Book, &quot;books&quot;)
+print(query)
+</code></pre>
+<p>This will output:</p>
+<pre><code>query Book {
+  books {
+    title
+    author
+  }
+}
+</code></pre>
+<p>To create a query with multiple top-level fields such as <code>books</code> and <code>authors</code>, use the <code><a title="pydantic_gql.Query" href="#pydantic_gql.Query">Query</a></code> constructor directly.</p>
+<pre><code class="language-python">class Author(BaseModel):
+    name: str
+
+query = Query(
+    &quot;BooksAndAuthors&quot;,
+    GqlField.from_model(Book, &quot;books&quot;),
+    GqlField.from_model(Author, &quot;authors&quot;),
+)
+print(query)
+</code></pre>
+<p>This will output:</p>
+<pre><code>query BooksAndAuthors {
+    books {
+        title
+        author
+    }
+    authors {
+        name
+    }
+}
+</code></pre>
+<h1 id="formatting">Formatting</h1>
+<p>To generate the query string to send to the API, use <code>str(<a title="pydantic_gql.query" href="query.html">pydantic_gql.query</a>)</code>. This will format the query with default indentation of 2 spaces.</p>
+<p>To customize the indentation, use <code>format</code> function or f-strings with the desired indentation level or a custom indentation string. The following are all valid:</p>
+<pre><code class="language-python">f&quot;default indentation of 2 spaces: {query}&quot;
+f&quot;same as above:                   {query:indent}&quot;
+f&quot;no indentation; all on one line: {query:noindent}&quot;
+f&quot;indentation of 4 spaces:         {query:4}&quot;
+f&quot;indentation with tabs:           {query:  }&quot;
+</code></pre>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>The name of the query. This has no meaning in the GraphQL query itself; it is just a label for you to identify the query.</dd>
+<dt><strong><code>fields</code></strong></dt>
+<dd>The fields to include in the query. These can be created manually or using the <code><a title="pydantic_gql.GqlField.from_model" href="#pydantic_gql.GqlField.from_model">GqlField.from_model()</a></code> constructor.</dd>
+<dt><strong><code>variables</code></strong></dt>
+<dd>The variables to include in the query.</dd>
+</dl></div>
+<h3>Static methods</h3>
+<dl>
+<dt id="pydantic_gql.Query.from_model"><code class="name flex">
+<span>def <span class="ident">from_model</span></span>(<span>model: type[BaseModel], field_name: str | None = None, query_name: str | None = None, variables: Iterable[<a title="pydantic_gql.Var" href="#pydantic_gql.Var">Var</a>[Any]] = (), args: Mapping[str, GqlValue] = {}) ‑> Self</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create a query with a single top-level field whose subfields are defined by a Pydantic model.</p>
+<h1 id="usage">Usage</h1>
+<p>To create a query with a single top-level field such as <code>books</code>, first create a Pydantic model for the <code>Book</code> type, then use the <code><a title="pydantic_gql.Query.from_model" href="#pydantic_gql.Query.from_model">Query.from_model()</a></code> constructor.</p>
+<pre><code class="language-python">class Book(BaseModel):
+    title: str
+    author: str
+
+query = Query.from_model(Book, &quot;books&quot;)
+print(query)
+</code></pre>
+<p>This will output:</p>
+<pre><code>query Book {
+    books {
+        title
+        author
+    }
+}
+</code></pre>
+<p>To include variables and arguments in the query, first create a subclass of <code><a title="pydantic_gql.BaseVars" href="#pydantic_gql.BaseVars">BaseVars</a></code> with the variables you want to define, then pass the variables and arguments to the constructor.</p>
+<pre><code class="language-python">class Vars(BaseVars):
+    year: Var[int]
+    genre: Var[str] = Var(default=&quot;fiction&quot;)
+
+query = Query.from_model(Book, &quot;books&quot;, variables=Vars(year=2021), args={&quot;genre&quot;: Vars.genre, &quot;year&quot;: Vars.year, &quot;limit&quot;: 10})
+print(query)
+</code></pre>
+<p>This will output:</p>
+<pre><code>query Book($year: Int!, $genre: String = &quot;fiction&quot;) {
+    books(genre: $genre, year: $year, limit: 10) {
+        title
+        author
+    }
+}
+</code></pre>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>model</code></strong></dt>
+<dd>The Pydantic model to use for the fields.</dd>
+<dt><strong><code>field_name</code></strong></dt>
+<dd>The name of the top-level field. If not provided, the name of the model is used.</dd>
+<dt><strong><code>query_name</code></strong></dt>
+<dd>The name of the query. If not provided, the name of the model is used.</dd>
+<dt><strong><code>variables</code></strong></dt>
+<dd>The variables to include in the query.</dd>
+<dt><strong><code>args</code></strong></dt>
+<dd>The arguments to pass to the top-level field.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="pydantic_gql.QueryBuilder"><code class="flex name class">
+<span>class <span class="ident">QueryBuilder</span></span>
+<span>(</span><span>indent: int | str | bool = True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A GraphQL query builder.</p>
+<p>This class is used to convert a <code><a title="pydantic_gql.Query" href="#pydantic_gql.Query">Query</a></code> object into a string containing the GraphQL query code.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>indent</code></strong></dt>
+<dd>The indentation to use when formatting the output. If <code>False</code> then no indentation is used and the query is returned as a single line. If <code>True</code> (the default) then the default indentation is used (two spaces). If an integer then that many spaces are used for indentation. If a string (must be whitespace) then that string is used for indentation.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="pydantic_gql.builders.builder.Builder" href="builders/builder.html#pydantic_gql.builders.builder.Builder">Builder</a></li>
+<li>abc.ABC</li>
+<li>typing.Generic</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pydantic_gql.QueryBuilder.DEFAULT_INDENTATION"><code class="name">var <span class="ident">DEFAULT_INDENTATION</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="pydantic_gql.QueryBuilder.insert"><code class="name flex">
+<span>def <span class="ident">insert</span></span>(<span>self, query: <a title="pydantic_gql.query.Query" href="query.html#pydantic_gql.query.Query">Query</a>, buffer: _io.StringIO) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Convert a <code><a title="pydantic_gql.Query" href="#pydantic_gql.Query">Query</a></code> object into a GraphQL query string.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>query</code></strong></dt>
+<dd>The query to convert.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The query as a string.</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="pydantic_gql.builders.builder.Builder" href="builders/builder.html#pydantic_gql.builders.builder.Builder">Builder</a></b></code>:
+<ul class="hlist">
+<li><code><a title="pydantic_gql.builders.builder.Builder.build" href="builders/builder.html#pydantic_gql.builders.builder.Builder.build">build</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="pydantic_gql.Var"><code class="flex name class">
+<span>class <span class="ident">Var</span></span>
+<span>(</span><span>name: str | None = None, default: T = &lt;object object&gt;, type: type[T] | None = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Abstract base class for generic types.</p>
+<p>On Python 3.12 and newer, generic classes implicitly inherit from
+Generic when they declare a parameter list after the class's name::</p>
+<pre><code>class Mapping[KT, VT]:
+    def __getitem__(self, key: KT) -&gt; VT:
+        ...
+    # Etc.
+</code></pre>
+<p>On older versions of Python, however, generic classes have to
+explicitly inherit from Generic.</p>
+<p>After a class has been declared to be generic, it can then be used as
+follows::</p>
+<pre><code>def lookup_name[KT, VT](mapping: Mapping[KT, VT], key: KT, default: VT) -&gt; VT:
+    try:
+        return mapping[key]
+    except KeyError:
+        return default
+</code></pre></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>typing.Generic</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pydantic_gql.Var.default"><code class="name">prop <span class="ident">default</span> : T</code></dt>
+<dd>
+<div class="desc"><p>The default value of the variable.</p></div>
+</dd>
+<dt id="pydantic_gql.Var.name"><code class="name">prop <span class="ident">name</span> : str</code></dt>
+<dd>
+<div class="desc"><p>The name of the variable.</p></div>
+</dd>
+<dt id="pydantic_gql.Var.required"><code class="name">var <span class="ident">required</span></code></dt>
+<dd>
+<div class="desc"><p>Whether the variable is required.</p>
+<p>A variable is required if (1) no default value is set <em>and</em> (2) the type annotation is not Optional.</p></div>
+</dd>
+<dt id="pydantic_gql.Var.var_type"><code class="name">var <span class="ident">var_type</span></code></dt>
+<dd>
+<div class="desc"><p>The python type of the variable.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="pydantic_gql.Var.set_default_name"><code class="name flex">
+<span>def <span class="ident">set_default_name</span></span>(<span>self, name: str) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set the name of the variable if it is not set.</p></div>
+</dd>
+<dt id="pydantic_gql.Var.set_default_type"><code class="name flex">
+<span>def <span class="ident">set_default_type</span></span>(<span>self, var_type: type[T]) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set the type of the variable if it is not set.</p></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul>
+<li><a href="#pydantic-gql">pydantic-gql</a><ul>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#links">Links</a></li>
+<li><a href="#usage">Usage</a><ul>
+<li><a href="#defining-pydantic-models">Defining Pydantic Models</a></li>
+<li><a href="#building-a-query">Building a Query</a></li>
+<li><a href="#generating-the-query-string">Generating the Query String</a></li>
+<li><a href="#using-variables">Using Variables</a></li>
+<li><a href="#more-complex-queries">More Complex Queries</a></li>
+<li><a href="#connections-pagination">Connections (Pagination)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="pydantic_gql.base_vars" href="base_vars.html">pydantic_gql.base_vars</a></code></li>
+<li><code><a title="pydantic_gql.builders" href="builders/index.html">pydantic_gql.builders</a></code></li>
+<li><code><a title="pydantic_gql.connections" href="connections.html">pydantic_gql.connections</a></code></li>
+<li><code><a title="pydantic_gql.gql_field" href="gql_field.html">pydantic_gql.gql_field</a></code></li>
+<li><code><a title="pydantic_gql.query" href="query.html">pydantic_gql.query</a></code></li>
+<li><code><a title="pydantic_gql.values" href="values.html">pydantic_gql.values</a></code></li>
+<li><code><a title="pydantic_gql.var" href="var.html">pydantic_gql.var</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="pydantic_gql.BaseVars" href="#pydantic_gql.BaseVars">BaseVars</a></code></h4>
+</li>
+<li>
+<h4><code><a title="pydantic_gql.Expr" href="#pydantic_gql.Expr">Expr</a></code></h4>
+</li>
+<li>
+<h4><code><a title="pydantic_gql.GqlField" href="#pydantic_gql.GqlField">GqlField</a></code></h4>
+<ul class="two-column">
+<li><code><a title="pydantic_gql.GqlField.args" href="#pydantic_gql.GqlField.args">args</a></code></li>
+<li><code><a title="pydantic_gql.GqlField.fields" href="#pydantic_gql.GqlField.fields">fields</a></code></li>
+<li><code><a title="pydantic_gql.GqlField.fields_of_model" href="#pydantic_gql.GqlField.fields_of_model">fields_of_model</a></code></li>
+<li><code><a title="pydantic_gql.GqlField.from_model" href="#pydantic_gql.GqlField.from_model">from_model</a></code></li>
+<li><code><a title="pydantic_gql.GqlField.from_pydantic_field" href="#pydantic_gql.GqlField.from_pydantic_field">from_pydantic_field</a></code></li>
+<li><code><a title="pydantic_gql.GqlField.name" href="#pydantic_gql.GqlField.name">name</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pydantic_gql.Query" href="#pydantic_gql.Query">Query</a></code></h4>
+<ul class="">
+<li><code><a title="pydantic_gql.Query.from_model" href="#pydantic_gql.Query.from_model">from_model</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pydantic_gql.QueryBuilder" href="#pydantic_gql.QueryBuilder">QueryBuilder</a></code></h4>
+<ul class="">
+<li><code><a title="pydantic_gql.QueryBuilder.DEFAULT_INDENTATION" href="#pydantic_gql.QueryBuilder.DEFAULT_INDENTATION">DEFAULT_INDENTATION</a></code></li>
+<li><code><a title="pydantic_gql.QueryBuilder.insert" href="#pydantic_gql.QueryBuilder.insert">insert</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pydantic_gql.Var" href="#pydantic_gql.Var">Var</a></code></h4>
+<ul class="two-column">
+<li><code><a title="pydantic_gql.Var.default" href="#pydantic_gql.Var.default">default</a></code></li>
+<li><code><a title="pydantic_gql.Var.name" href="#pydantic_gql.Var.name">name</a></code></li>
+<li><code><a title="pydantic_gql.Var.required" href="#pydantic_gql.Var.required">required</a></code></li>
+<li><code><a title="pydantic_gql.Var.set_default_name" href="#pydantic_gql.Var.set_default_name">set_default_name</a></code></li>
+<li><code><a title="pydantic_gql.Var.set_default_type" href="#pydantic_gql.Var.set_default_type">set_default_type</a></code></li>
+<li><code><a title="pydantic_gql.Var.var_type" href="#pydantic_gql.Var.var_type">var_type</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.1</a>.</p>
+</footer>
+</body>
+</html>
