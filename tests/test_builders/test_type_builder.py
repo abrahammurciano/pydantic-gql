@@ -58,7 +58,16 @@ def test_invalid_iterable_type(builder: TypeBuilder) -> None:
         builder.build(var)
 
 
-@pytest.mark.parametrize("var", (Var(), Var[object](), Var[list](), Var[Iterable]()))
+@pytest.mark.parametrize(
+    "var",
+    (
+        Var(),
+        Var[object](),
+        Var[list](),  # type: ignore
+        Var[list[Any]](),
+        Var[Iterable](),  # type: ignore
+    ),
+)
 def test_unknown_type(builder: TypeBuilder, var: Var[Any]) -> None:
     with pytest.raises(ValueError):
         builder.build(var)

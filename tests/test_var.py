@@ -1,4 +1,4 @@
-from typing import Optional, cast
+from typing import Any, Optional, cast
 
 import pytest
 
@@ -44,6 +44,6 @@ def test_set_default_name() -> None:
 
 
 def test_set_default_type() -> None:
-    var = Var("v")
+    var = Var[Any]("v")
     var.set_default_type(int)
     assert var.var_type == int
