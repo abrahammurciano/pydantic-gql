@@ -135,8 +135,8 @@ query = Query.from_model(
 This will create a query that looks like this:
 
 ```graphql
-query User($age: Int!, $group: String, $isAdmin: Boolean = false){
-  User(age: $age, group: $group, isAdmin: $isAdmin) {
+query User($age: Int!, $group: String, $is_admin: Boolean = false){
+  User(age: $age, group: $group, isAdmin: $is_admin) {
     id,
     name,
     groups {
