@@ -22,19 +22,19 @@ To use `pydantic-gql`, you need to define your Pydantic models and then use them
 
 ### Defining Pydantic Models
 
-First, define your Pydantic models that represent the data structure of your GraphQL schema.
+First, define your Pydantic models that represent the structure of the data you want to query. Here's an example:
 
 ```python
 from pydantic import BaseModel
 
 class Group(BaseModel):
-	id: int
-	name: str
+    id: int
+    name: str
 
 class User(BaseModel):
-	id: int
-	name: str
-	groups: list[Group]
+    id: int
+    name: str
+    groups: list[Group]
 ```
 
 ### Building a Query
@@ -55,9 +55,9 @@ query User{
     id,
     name,
     groups {
-	  id,
-	  name,
-	},
+      id,
+      name,
+    },
   },
 }
 ```
@@ -66,10 +66,10 @@ This method also provides parameters to customise the query, such as the query n
 
 ```python
 query = Query.from_model(
-	User,
-	query_name="GetUser",
-	field_name="users",
-	arguments={"id": 1},
+    User,
+    query_name="GetUser",
+    field_name="users",
+    arguments={"id": 1},
 )
 ```
 
@@ -78,12 +78,12 @@ This will create a query that looks like this:
 ```graphql
 query GetUser{
   users(id: 1) {
-	id,
-	name,
-	groups {
-	  id,
-	  name,
-	},
+    id,
+    name,
+    groups {
+      id,
+      name,
+    },
   },
 }
 ```
@@ -117,18 +117,18 @@ To define variables in a query, first create a class that inherits from `BaseVar
 from pydantic_gql import BaseVars
 
 class UserVars(BaseVars):
-	age: Var[int]
-	group: Var[str | None]
-	is_admin: Var[bool] = Var(default=False)
+    age: Var[int]
+    group: Var[str | None]
+    is_admin: Var[bool] = Var(default=False)
 ```
 
 You can pass the class itself to the `Query.from_model()` method to include the variables in the query. You can also reference the class attributes in the query arguments directly.
 
 ```python
 query = Query.from_model(
-	User,
-	variables=UserVars,
-	args={"age": UserVars.age, "group": UserVars.group, "isAdmin": UserVars.is_admin},
+    User,
+    variables=UserVars,
+    args={"age": UserVars.age, "group": UserVars.group, "isAdmin": UserVars.is_admin},
 )
 ```
 
@@ -137,12 +137,12 @@ This will create a query that looks like this:
 ```graphql
 query User($age: Int!, $group: String, $isAdmin: Boolean = false){
   User(age: $age, group: $group, isAdmin: $isAdmin) {
-	id,
-	name,
-	groups {
-	  id,
-	  name,
-	},
+    id,
+    name,
+    groups {
+      id,
+      name,
+    },
   },
 }
 ```
@@ -169,34 +169,34 @@ from pydantic import BaseModel, Field
 from pydantic_gql import Query, GqlField, BaseVars
 
 class Vars(BaseVars):
-	min_size: Var[int] = Var(default=0)
-	groups_per_user: Var[int | None]
+    min_size: Var[int] = Var(default=0)
+    groups_per_user: Var[int | None]
 
 class PageInfo(BaseModel):
-	has_next_page: bool = Field(alias="hasNextPage")
-	end_cursor: str | None = Field(alias="endCursor")
+    has_next_page: bool = Field(alias="hasNextPage")
+    end_cursor: str | None = Field(alias="endCursor")
 
 class GroupEdge(BaseModel):
-	node: Group
-	cursor: str
+    node: Group
+    cursor: str
 
 class GroupConnection(BaseModel):
-	edges: list[GroupEdge]
-	page_info: PageInfo = Field(alias="pageInfo")
+    edges: list[GroupEdge]
+    page_info: PageInfo = Field(alias="pageInfo")
 
 query = Query(
-	"GetUsersAndGroups",
-	GqlField(
-		name="users",
-		args={"minAge": 18},
-		fields=(
-			GqlField("id"),
-			GqlField("name"),
-			GqlField.from_model(GroupConnection, "groups", args={"first": Vars.groups_per_user}),
-		),
-	)
-	GqlField.from_model(Group, "groups", args={"minSize": Vars.min_size}),
-	variables=Vars,
+    "GetUsersAndGroups",
+    GqlField(
+        name="users",
+        args={"minAge": 18},
+        fields=(
+            GqlField("id"),
+            GqlField("name"),
+            GqlField.from_model(GroupConnection, "groups", args={"first": Vars.groups_per_user}),
+        ),
+    )
+    GqlField.from_model(Group, "groups", args={"minSize": Vars.min_size}),
+    variables=Vars,
 )
 ```
 
@@ -205,25 +205,25 @@ This will create a query that looks like this:
 ```graphql
 query GetUsersAndGroups($min_size: Int = 0, $groups_per_user: Int){
   users(minAge: 18) {
-	id,
-	name,
-	groups(first: $groups_per_user) {
-	  edges {
-		node {
-		  id,
-		  name,
-		},
-		cursor,
-	  },
-	  pageInfo {
-		hasNextPage,
-		endCursor,
-	  },
-	},
+    id,
+    name,
+    groups(first: $groups_per_user) {
+      edges {
+        node {
+          id,
+          name,
+        },
+        cursor,
+      },
+      pageInfo {
+        hasNextPage,
+        endCursor,
+      },
+    },
   },
   groups(minSize: $min_size) {
-	id,
-	name,
+    id,
+    name,
   },
 }
 ```
@@ -238,9 +238,9 @@ Here's an example of how to use the `Connection` class:
 from pydantic_gql.connections import Connection
 
 query = Query.from_model(
-	Connection[User],
-	"users",
-	args={"first": 10},
+    Connection[User],
+    "users",
+    args={"first": 10},
 )
 ```
 
@@ -249,21 +249,21 @@ This will create a query that looks like this:
 ```graphql
 query User{
   users(first: 10) {
-	edges {
-	  node {
-		id,
-		name,
-		groups {
-		  id,
-		  name,
-		},
-	  },
-	  cursor,
-	},
-	pageInfo {
-	  hasNextPage,
-	  endCursor,
-	},
+    edges {
+      node {
+        id,
+        name,
+        groups {
+          id,
+          name,
+        },
+      },
+      cursor,
+    },
+    pageInfo {
+      hasNextPage,
+      endCursor,
+    },
   },
 }
 ```
