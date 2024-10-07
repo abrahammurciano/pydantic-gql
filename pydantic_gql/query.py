@@ -170,3 +170,6 @@ class Query:
 
     def __str__(self) -> str:
         return self.__format__("")
+
+    def __repr__(self) -> str:
+        return f"<Query {self:noindent}>"

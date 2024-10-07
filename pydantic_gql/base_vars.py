@@ -87,6 +87,9 @@ class BaseVars(Mapping[str, Any], metaclass=BaseVarsMeta):
     def __len__(self) -> int:
         return len(self.__values__)
 
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}({', '.join(f'{k}={v!r}' for k, v in self.__values__.items())})"
+
 
 def _get_value(key: str, kwargs: Mapping[str, Any], var: Var[Any]) -> Any:
     if key in kwargs:

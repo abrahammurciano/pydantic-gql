@@ -39,7 +39,7 @@ hljs.highlightAll();
 <h2 id="usage">Usage</h2>
 <p>To use <code>pydantic-gql</code>, you need to define your Pydantic models and then use them to build GraphQL queries. The core class you'll interact with is the <code><a title="pydantic_gql.Query" href="#pydantic_gql.Query">Query</a></code> class.</p>
 <h3 id="defining-pydantic-models">Defining Pydantic Models</h3>
-<p>First, define your Pydantic models that represent the data structure of your GraphQL schema.</p>
+<p>First, define your Pydantic models that represent the structure of the data you want to query. Here's an example:</p>
 <pre><code class="language-python">from pydantic import BaseModel
 
 class Group(BaseModel):
@@ -120,8 +120,8 @@ class UserVars(BaseVars):
 )
 </code></pre>
 <p>This will create a query that looks like this:</p>
-<pre><code class="language-graphql">query User($age: Int!, $group: String, $isAdmin: Boolean = false){
-  User(age: $age, group: $group, isAdmin: $isAdmin) {
+<pre><code class="language-graphql">query User($age: Int!, $group: String, $is_admin: Boolean = false){
+  User(age: $age, group: $group, isAdmin: $is_admin) {
     id,
     name,
     groups {
@@ -277,10 +277,21 @@ query = Query.from_model(
 <span>(</span><span>*args: object, **kwargs: Any)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>A Mapping is a generic container for associating key/value
-pairs.</p>
-<p>This class provides concrete generic implementations of all
-methods except for <strong>getitem</strong>, <strong>iter</strong>, and <strong>len</strong>.</p></div>
+<div class="desc"><p>Base class for classes that define a set of variables for a GraphQL query.</p>
+<h1 id="usage">Usage</h1>
+<p>To define a set of variables, subclass <code><a title="pydantic_gql.BaseVars" href="#pydantic_gql.BaseVars">BaseVars</a></code> and define class attributes with type hints of <code><a title="pydantic_gql.Var" href="#pydantic_gql.Var">Var</a>[T]</code> where <code>T</code> is the type of the variable. Optionally, you can assign an instance of <code><a title="pydantic_gql.Var" href="#pydantic_gql.Var">Var</a></code> to provide a default value or to override the name and type of the variable.</p>
+<p>If no <code><a title="pydantic_gql.Var" href="#pydantic_gql.Var">Var</a></code> instance is assigned, then the variable name will be extracted from the class attribute name, the variable type will be extracted from the type hint, and the default will be <code>None</code> if the type hint allows it (e.g. <code>Optional[T]</code> or <code>T | None</code>). If the type hint does not allow <code>None</code>, then the variable will be required and an error will be raised if it is not provided.</p>
+<p>If a <code><a title="pydantic_gql.Var" href="#pydantic_gql.Var">Var</a></code> instance is assigned, it may specify a default value for the variable with the keyword argument <code>default</code>. If the keyword argument <code>name</code> is provided, it will override the variable name. This is useful for variables that have a different name in the GraphQL query than in the Python code, e.g. <code>local_name: Var[str] = Var(name="remoteName")</code> will be treated as <code>remoteName</code> in the GraphQL query but as an attribute <code>local_name</code> in the Python code.</p>
+<pre><code class="language-python">from pydantic_gql import BaseVars, Var
+
+class MyVars(BaseVars):
+    id: Var[int]
+    optional: Var[str | None]
+    default: Var[str] = Var(default=&quot;default value&quot;)
+    local_name: Var[str] = Var(name=&quot;remoteName&quot;)
+    many: Var[list[str]]
+</code></pre>
+<p>The <code>MyVars</code> class is itself an iterable of <code><a title="pydantic_gql.Var" href="#pydantic_gql.Var">Var</a></code>s. Instances of <code>MyVars</code> have values and is a mapping from variable name to value.</p></div>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li>collections.abc.Mapping</li>
@@ -302,6 +313,13 @@ methods except for <strong>getitem</strong>, <strong>iter</strong>, and <strong>
 <dt><strong><code>value</code></strong></dt>
 <dd>The string representation of the expression in GraphQL.</dd>
 </dl></div>
+<h3>Class variables</h3>
+<dl>
+<dt id="pydantic_gql.Expr.value"><code class="name">var <span class="ident">value</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 </dd>
 <dt id="pydantic_gql.GqlField"><code class="flex name class">
 <span>class <span class="ident">GqlField</span></span>
@@ -542,24 +560,16 @@ print(query)
 <span>(</span><span>name: str | None = None, default: T = &lt;object object&gt;, type: type[T] | None = None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Abstract base class for generic types.</p>
-<p>On Python 3.12 and newer, generic classes implicitly inherit from
-Generic when they declare a parameter list after the class's name::</p>
-<pre><code>class Mapping[KT, VT]:
-    def __getitem__(self, key: KT) -&gt; VT:
-        ...
-    # Etc.
-</code></pre>
-<p>On older versions of Python, however, generic classes have to
-explicitly inherit from Generic.</p>
-<p>After a class has been declared to be generic, it can then be used as
-follows::</p>
-<pre><code>def lookup_name[KT, VT](mapping: Mapping[KT, VT], key: KT, default: VT) -&gt; VT:
-    try:
-        return mapping[key]
-    except KeyError:
-        return default
-</code></pre></div>
+<div class="desc"><p>A variable definition for a GraphQL query.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>The name of the variable. If used as a class attribute on a <code><a title="pydantic_gql.BaseVars" href="#pydantic_gql.BaseVars">BaseVars</a></code> subclass, the name will be extracted from the attribute name if not provided.</dd>
+<dt><strong><code>default</code></strong></dt>
+<dd>The default value of the variable. If the type annotation allows <code>None</code>, the default value will be <code>None</code> if not provided. Otherwise, the variable will be considered required.</dd>
+<dt><strong><code>type</code></strong></dt>
+<dd>The python type of the variable. If used as a class attribute on a <code><a title="pydantic_gql.BaseVars" href="#pydantic_gql.BaseVars">BaseVars</a></code> subclass, the type will be extracted from the type annotation if not provided. It can also be extracted from the type annotation used when creating the <code><a title="pydantic_gql.Var" href="#pydantic_gql.Var">Var</a></code> instance, e.g. <code>Var[str]("name")</code>.</dd>
+</dl></div>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li>typing.Generic</li>
@@ -568,7 +578,8 @@ follows::</p>
 <dl>
 <dt id="pydantic_gql.Var.default"><code class="name">prop <span class="ident">default</span> : T</code></dt>
 <dd>
-<div class="desc"><p>The default value of the variable.</p></div>
+<div class="desc"><p>The default value of the variable.</p>
+<p>If the variable is required, accessing this property will raise a <code>ValueError</code>.</p></div>
 </dd>
 <dt id="pydantic_gql.Var.name"><code class="name">prop <span class="ident">name</span> : str</code></dt>
 <dd>
@@ -577,7 +588,7 @@ follows::</p>
 <dt id="pydantic_gql.Var.required"><code class="name">var <span class="ident">required</span></code></dt>
 <dd>
 <div class="desc"><p>Whether the variable is required.</p>
-<p>A variable is required if (1) no default value is set <em>and</em> (2) the type annotation is not Optional.</p></div>
+<p>A variable is required if (1) no default value is set <em>and</em> (2) the type annotation does not allow None.</p></div>
 </dd>
 <dt id="pydantic_gql.Var.var_type"><code class="name">var <span class="ident">var_type</span></code></dt>
 <dd>
@@ -641,6 +652,9 @@ follows::</p>
 </li>
 <li>
 <h4><code><a title="pydantic_gql.Expr" href="#pydantic_gql.Expr">Expr</a></code></h4>
+<ul class="">
+<li><code><a title="pydantic_gql.Expr.value" href="#pydantic_gql.Expr.value">value</a></code></li>
+</ul>
 </li>
 <li>
 <h4><code><a title="pydantic_gql.GqlField" href="#pydantic_gql.GqlField">GqlField</a></code></h4>

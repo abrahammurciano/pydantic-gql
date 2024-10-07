@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Any, Iterable
 
 from .var import Var
 
 
+@dataclass
 class Expr:
     """An explicit expression for an argument in a GraphQL query.
 
@@ -12,8 +14,7 @@ class Expr:
         value: The string representation of the expression in GraphQL.
     """
 
-    def __init__(self, value: str) -> None:
-        self.value = value
+    value: str
 
     def __str__(self) -> str:
         return self.value
