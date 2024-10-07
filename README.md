@@ -151,7 +151,7 @@ When you want to send the query, you can instantiate the variables class, which 
 
 ```python
 variables = UserVars(age=18, group="admin", is_admin=True)
-httpx.post(..., json={"query": str(query), "variables": variables})
+httpx.post(..., json={"query": str(query), "variables": dict(variables)})
 ```
 
 ### More Complex Queries
