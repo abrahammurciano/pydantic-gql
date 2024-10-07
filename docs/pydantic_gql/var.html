@@ -49,24 +49,16 @@ hljs.highlightAll();
 <span>(</span><span>name: str | None = None, default: T = &lt;object object&gt;, type: type[T] | None = None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Abstract base class for generic types.</p>
-<p>On Python 3.12 and newer, generic classes implicitly inherit from
-Generic when they declare a parameter list after the class's name::</p>
-<pre><code>class Mapping[KT, VT]:
-    def __getitem__(self, key: KT) -&gt; VT:
-        ...
-    # Etc.
-</code></pre>
-<p>On older versions of Python, however, generic classes have to
-explicitly inherit from Generic.</p>
-<p>After a class has been declared to be generic, it can then be used as
-follows::</p>
-<pre><code>def lookup_name[KT, VT](mapping: Mapping[KT, VT], key: KT, default: VT) -&gt; VT:
-    try:
-        return mapping[key]
-    except KeyError:
-        return default
-</code></pre></div>
+<div class="desc"><p>A variable definition for a GraphQL query.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>The name of the variable. If used as a class attribute on a <code>BaseVars</code> subclass, the name will be extracted from the attribute name if not provided.</dd>
+<dt><strong><code>default</code></strong></dt>
+<dd>The default value of the variable. If the type annotation allows <code>None</code>, the default value will be <code>None</code> if not provided. Otherwise, the variable will be considered required.</dd>
+<dt><strong><code>type</code></strong></dt>
+<dd>The python type of the variable. If used as a class attribute on a <code>BaseVars</code> subclass, the type will be extracted from the type annotation if not provided. It can also be extracted from the type annotation used when creating the <code><a title="pydantic_gql.var.Var" href="#pydantic_gql.var.Var">Var</a></code> instance, e.g. <code>Var[str]("name")</code>.</dd>
+</dl></div>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li>typing.Generic</li>
@@ -75,7 +67,8 @@ follows::</p>
 <dl>
 <dt id="pydantic_gql.var.Var.default"><code class="name">prop <span class="ident">default</span> : T</code></dt>
 <dd>
-<div class="desc"><p>The default value of the variable.</p></div>
+<div class="desc"><p>The default value of the variable.</p>
+<p>If the variable is required, accessing this property will raise a <code>ValueError</code>.</p></div>
 </dd>
 <dt id="pydantic_gql.var.Var.name"><code class="name">prop <span class="ident">name</span> : str</code></dt>
 <dd>
@@ -84,7 +77,7 @@ follows::</p>
 <dt id="pydantic_gql.var.Var.required"><code class="name">var <span class="ident">required</span></code></dt>
 <dd>
 <div class="desc"><p>Whether the variable is required.</p>
-<p>A variable is required if (1) no default value is set <em>and</em> (2) the type annotation is not Optional.</p></div>
+<p>A variable is required if (1) no default value is set <em>and</em> (2) the type annotation does not allow None.</p></div>
 </dd>
 <dt id="pydantic_gql.var.Var.var_type"><code class="name">var <span class="ident">var_type</span></code></dt>
 <dd>

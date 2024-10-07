@@ -40,10 +40,21 @@ hljs.highlightAll();
 <span>(</span><span>*args: object, **kwargs: Any)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>A Mapping is a generic container for associating key/value
-pairs.</p>
-<p>This class provides concrete generic implementations of all
-methods except for <strong>getitem</strong>, <strong>iter</strong>, and <strong>len</strong>.</p></div>
+<div class="desc"><p>Base class for classes that define a set of variables for a GraphQL query.</p>
+<h1 id="usage">Usage</h1>
+<p>To define a set of variables, subclass <code><a title="pydantic_gql.base_vars.BaseVars" href="#pydantic_gql.base_vars.BaseVars">BaseVars</a></code> and define class attributes with type hints of <code>Var[T]</code> where <code>T</code> is the type of the variable. Optionally, you can assign an instance of <code>Var</code> to provide a default value or to override the name and type of the variable.</p>
+<p>If no <code>Var</code> instance is assigned, then the variable name will be extracted from the class attribute name, the variable type will be extracted from the type hint, and the default will be <code>None</code> if the type hint allows it (e.g. <code>Optional[T]</code> or <code>T | None</code>). If the type hint does not allow <code>None</code>, then the variable will be required and an error will be raised if it is not provided.</p>
+<p>If a <code>Var</code> instance is assigned, it may specify a default value for the variable with the keyword argument <code>default</code>. If the keyword argument <code>name</code> is provided, it will override the variable name. This is useful for variables that have a different name in the GraphQL query than in the Python code, e.g. <code>local_name: Var[str] = Var(name="remoteName")</code> will be treated as <code>remoteName</code> in the GraphQL query but as an attribute <code>local_name</code> in the Python code.</p>
+<pre><code class="language-python">from pydantic_gql import BaseVars, Var
+
+class MyVars(BaseVars):
+    id: Var[int]
+    optional: Var[str | None]
+    default: Var[str] = Var(default=&quot;default value&quot;)
+    local_name: Var[str] = Var(name=&quot;remoteName&quot;)
+    many: Var[list[str]]
+</code></pre>
+<p>The <code>MyVars</code> class is itself an iterable of <code>Var</code>s. Instances of <code>MyVars</code> have values and is a mapping from variable name to value.</p></div>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li>collections.abc.Mapping</li>
