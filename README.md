@@ -111,10 +111,10 @@ query_string = format(query, '\t')
 
 A GraphQL query can define variables at the top and then reference them throughout the rest of the query. Then when the query is sent to the server, the variables are passed in a separate dictionary.
 
-To define variables in a query, first create a class that inherits from `BaseVars` and define the variables as attributes.
+To define variables in a query, first create a class that inherits from `BaseVars` and define the variables as attributes with `Var[T]` as the type annotation.
 
 ```python
-from pydantic_gql import BaseVars
+from pydantic_gql import BaseVars, Var
 
 class UserVars(BaseVars):
     age: Var[int]
