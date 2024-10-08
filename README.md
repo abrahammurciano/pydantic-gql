@@ -18,9 +18,11 @@ $ pip install pydantic-gql
 
 ## Usage
 
-To use `pydantic-gql`, you need to define your Pydantic models and then use them to build GraphQL queries. The core class you'll interact with is the `Query` class.
+To use `pydantic-gql`, you need to define your Pydantic models and then use them to build GraphQL queries. The core classes you'll interact with is the `Query` class to create queries and the `Mutation` class to create mutations. (Both queries and mutations are types of "operations".)
 
-### Defining Pydantic Models
+### Queries
+
+#### Defining Pydantic Models
 
 First, define your Pydantic models that represent the structure of the data you want to query. Here's an example:
 
@@ -37,7 +39,7 @@ class User(BaseModel):
     groups: list[Group]
 ```
 
-### Building a Query
+#### Building a Query
 
 Most GraphQL queries contain a single top-level field. Since this is the most common use case, this library provides `Query.from_model()` as a convenience method to create a query with one top-level field whose subfields are defined by the Pydantic model.
 
@@ -88,20 +90,46 @@ query GetUser{
 }
 ```
 
-### Generating the Query String
+### Mutations
 
-To get the actual GraphQL query as a string that you can send to your server, simply convert the `Query` object to a string.
+Since both queries and mutations are types of operations, the `Mutation` class works in the same way as the `Query` class. Here's an example of how to build a mutation that could create a new user and return their data.
+
+```python
+from pydantic_gql import Mutation
+
+new_user = User(id=1, name="John Doe", groups=[])
+mutation = Mutation.from_model(User, "create_user", args=dict(new_user))
+```
+
+This will create a mutation that looks like this:
+
+```graphql
+mutation CreateUser {
+  createUser(id: 1, name: "John Doe", groups: []) {
+	id,
+	name,
+	groups {
+	  id,
+	  name,
+	},
+  },
+}
+```
+
+### Generating the GraphQL Operation String
+
+To get the actual GraphQL query or mutation as a string that you can send to your server, simply convert the `Query` or `Mutation` object to a string.
 
 ```python
 query_string = str(query)
 ```
 
-You can control the indentation of the query string by using `format()` instead of `str()`. Valid values for the format specifier are:
+You can control the indentation of the resulting string by using `format()` instead of `str()`. Valid values for the format specifier are:
 
-- `indent` - The default. Indent the query string with two spaces.
-- `noindent` - Do not indent the query string. The result will be a single line.
-- A number - Indent the query string with the specified number of spaces.
-- A whitespace string - Indent the query string with the specified string, e.g. `\t`.
+- `indent` - The default. Indent the resulting string with two spaces.
+- `noindent` - Do not indent the resulting string. The result will be a single line.
+- A number - Indent the resulting string with the specified number of spaces.
+- A whitespace string - Indent the resulting string with the specified string, e.g. `\t`.
 
 ```python
 query_string = format(query, '\t')
@@ -109,9 +137,9 @@ query_string = format(query, '\t')
 
 ### Using Variables
 
-A GraphQL query can define variables at the top and then reference them throughout the rest of the query. Then when the query is sent to the server, the variables are passed in a separate dictionary.
+A GraphQL query can define variables at the top and then reference them throughout the rest of the operation. Then when the operation is sent to the server, the variables are passed in a separate dictionary.
 
-To define variables in a query, first create a class that inherits from `BaseVars` and define the variables as attributes with `Var[T]` as the type annotation.
+To define variables for a GraphQL operation, first create a class that inherits from `BaseVars` and define the variables as attributes with `Var[T]` as the type annotation.
 
 ```python
 from pydantic_gql import BaseVars, Var
@@ -122,7 +150,7 @@ class UserVars(BaseVars):
     is_admin: Var[bool] = Var(default=False)
 ```
 
-You can pass the class itself to the `Query.from_model()` method to include the variables in the query. You can also reference the class attributes in the query arguments directly.
+You can pass the class itself to the `.from_model()` method to include the variables in the query. You can also reference the class attributes in the operation's arguments directly.
 
 ```python
 query = Query.from_model(
@@ -154,9 +182,11 @@ variables = UserVars(age=18, group="admin", is_admin=True)
 httpx.post(..., json={"query": str(query), "variables": dict(variables)})
 ```
 
-### More Complex Queries
+### More Complex Operations
 
-Sometimes you may need to build more complex queries than the ones we've seen so far. For example, you may need to include multiple top-level fields, or you may need to provide arguments to some deeply nested fields.
+Sometimes you may need to build more complex operations than the ones we've seen so far. For example, you may need to include multiple top-level fields, or you may need to provide arguments to some deeply nested fields.
+
+> In the following examples we'll be using queries, but the same principles apply to mutations.
 
 In these cases, you can build the query manually with the `Query` constructor. The constructor takes the query name followed by any number of `GqlField` objects, then optionally `variables` as a keyword argument.
 
