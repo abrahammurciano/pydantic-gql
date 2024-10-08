@@ -37,8 +37,9 @@ hljs.highlightAll();
 <p><a href="https://github.com/abrahammurciano/pydantic-gql.git"><img alt="Source Code - GitHub" src="https://img.shields.io/badge/Source_Code-GitHub-181717?style=for-the-badge&amp;logo=GitHub&amp;logoColor=%23FFFFFF"></a></p>
 <p><a href="https://pypi.org/project/pydantic-gql/"><img alt="PyPI - pydantic-gql" src="https://img.shields.io/badge/PyPI-pydantic_gql-006DAD?style=for-the-badge&amp;logo=PyPI&amp;logoColor=%23FFD242"></a></p>
 <h2 id="usage">Usage</h2>
-<p>To use <code>pydantic-gql</code>, you need to define your Pydantic models and then use them to build GraphQL queries. The core class you'll interact with is the <code><a title="pydantic_gql.Query" href="#pydantic_gql.Query">Query</a></code> class.</p>
-<h3 id="defining-pydantic-models">Defining Pydantic Models</h3>
+<p>To use <code>pydantic-gql</code>, you need to define your Pydantic models and then use them to build GraphQL queries. The core classes you'll interact with is the <code><a title="pydantic_gql.Query" href="#pydantic_gql.Query">Query</a></code> class to create queries and the <code><a title="pydantic_gql.Mutation" href="#pydantic_gql.Mutation">Mutation</a></code> class to create mutations. (Both queries and mutations are types of "operations".)</p>
+<h3 id="queries">Queries</h3>
+<h4 id="defining-pydantic-models">Defining Pydantic Models</h4>
 <p>First, define your Pydantic models that represent the structure of the data you want to query. Here's an example:</p>
 <pre><code class="language-python">from pydantic import BaseModel
 
@@ -51,7 +52,7 @@ class User(BaseModel):
     name: str
     groups: list[Group]
 </code></pre>
-<h3 id="building-a-query">Building a Query</h3>
+<h4 id="building-a-query">Building a Query</h4>
 <p>Most GraphQL queries contain a single top-level field. Since this is the most common use case, this library provides <code><a title="pydantic_gql.Query.from_model" href="#pydantic_gql.Query.from_model">Query.from_model()</a></code> as a convenience method to create a query with one top-level field whose subfields are defined by the Pydantic model.</p>
 <pre><code class="language-python">from pydantic_gql import Query
 
@@ -89,22 +90,41 @@ query = Query.from_model(User)
   },
 }
 </code></pre>
-<h3 id="generating-the-query-string">Generating the Query String</h3>
-<p>To get the actual GraphQL query as a string that you can send to your server, simply convert the <code><a title="pydantic_gql.Query" href="#pydantic_gql.Query">Query</a></code> object to a string.</p>
+<h3 id="mutations">Mutations</h3>
+<p>Since both queries and mutations are types of operations, the <code><a title="pydantic_gql.Mutation" href="#pydantic_gql.Mutation">Mutation</a></code> class works in the same way as the <code><a title="pydantic_gql.Query" href="#pydantic_gql.Query">Query</a></code> class. Here's an example of how to build a mutation that could create a new user and return their data.</p>
+<pre><code class="language-python">from pydantic_gql import Mutation
+
+new_user = User(id=1, name=&quot;John Doe&quot;, groups=[])
+mutation = Mutation.from_model(User, &quot;create_user&quot;, args=dict(new_user))
+</code></pre>
+<p>This will create a mutation that looks like this:</p>
+<pre><code class="language-graphql">mutation CreateUser {
+  createUser(id: 1, name: &quot;John Doe&quot;, groups: []) {
+    id,
+    name,
+    groups {
+      id,
+      name,
+    },
+  },
+}
+</code></pre>
+<h3 id="generating-the-graphql-operation-string">Generating the GraphQL Operation String</h3>
+<p>To get the actual GraphQL query or mutation as a string that you can send to your server, simply convert the <code><a title="pydantic_gql.Query" href="#pydantic_gql.Query">Query</a></code> or <code><a title="pydantic_gql.Mutation" href="#pydantic_gql.Mutation">Mutation</a></code> object to a string.</p>
 <pre><code class="language-python">query_string = str(query)
 </code></pre>
-<p>You can control the indentation of the query string by using <code>format()</code> instead of <code>str()</code>. Valid values for the format specifier are:</p>
+<p>You can control the indentation of the resulting string by using <code>format()</code> instead of <code>str()</code>. Valid values for the format specifier are:</p>
 <ul>
-<li><code>indent</code> - The default. Indent the query string with two spaces.</li>
-<li><code>noindent</code> - Do not indent the query string. The result will be a single line.</li>
-<li>A number - Indent the query string with the specified number of spaces.</li>
-<li>A whitespace string - Indent the query string with the specified string, e.g. <code>\t</code>.</li>
+<li><code>indent</code> - The default. Indent the resulting string with two spaces.</li>
+<li><code>noindent</code> - Do not indent the resulting string. The result will be a single line.</li>
+<li>A number - Indent the resulting string with the specified number of spaces.</li>
+<li>A whitespace string - Indent the resulting string with the specified string, e.g. <code>\t</code>.</li>
 </ul>
 <pre><code class="language-python">query_string = format(query, '\t')
 </code></pre>
 <h3 id="using-variables">Using Variables</h3>
-<p>A GraphQL query can define variables at the top and then reference them throughout the rest of the query. Then when the query is sent to the server, the variables are passed in a separate dictionary.</p>
-<p>To define variables in a query, first create a class that inherits from <code><a title="pydantic_gql.BaseVars" href="#pydantic_gql.BaseVars">BaseVars</a></code> and define the variables as attributes with <code><a title="pydantic_gql.Var" href="#pydantic_gql.Var">Var</a>[T]</code> as the type annotation.</p>
+<p>A GraphQL query can define variables at the top and then reference them throughout the rest of the operation. Then when the operation is sent to the server, the variables are passed in a separate dictionary.</p>
+<p>To define variables for a GraphQL operation, first create a class that inherits from <code><a title="pydantic_gql.BaseVars" href="#pydantic_gql.BaseVars">BaseVars</a></code> and define the variables as attributes with <code><a title="pydantic_gql.Var" href="#pydantic_gql.Var">Var</a>[T]</code> as the type annotation.</p>
 <pre><code class="language-python">from pydantic_gql import BaseVars, Var
 
 class UserVars(BaseVars):
@@ -112,7 +132,7 @@ class UserVars(BaseVars):
     group: Var[str | None]
     is_admin: Var[bool] = Var(default=False)
 </code></pre>
-<p>You can pass the class itself to the <code><a title="pydantic_gql.Query.from_model" href="#pydantic_gql.Query.from_model">Query.from_model()</a></code> method to include the variables in the query. You can also reference the class attributes in the query arguments directly.</p>
+<p>You can pass the class itself to the <code>.from_model()</code> method to include the variables in the query. You can also reference the class attributes in the operation's arguments directly.</p>
 <pre><code class="language-python">query = Query.from_model(
     User,
     variables=UserVars,
@@ -135,8 +155,11 @@ class UserVars(BaseVars):
 <pre><code class="language-python">variables = UserVars(age=18, group=&quot;admin&quot;, is_admin=True)
 httpx.post(..., json={&quot;query&quot;: str(query), &quot;variables&quot;: dict(variables)})
 </code></pre>
-<h3 id="more-complex-queries">More Complex Queries</h3>
-<p>Sometimes you may need to build more complex queries than the ones we've seen so far. For example, you may need to include multiple top-level fields, or you may need to provide arguments to some deeply nested fields.</p>
+<h3 id="more-complex-operations">More Complex Operations</h3>
+<p>Sometimes you may need to build more complex operations than the ones we've seen so far. For example, you may need to include multiple top-level fields, or you may need to provide arguments to some deeply nested fields.</p>
+<blockquote>
+<p>In the following examples we'll be using queries, but the same principles apply to mutations.</p>
+</blockquote>
 <p>In these cases, you can build the query manually with the <code><a title="pydantic_gql.Query" href="#pydantic_gql.Query">Query</a></code> constructor. The constructor takes the query name followed by any number of <code><a title="pydantic_gql.GqlField" href="#pydantic_gql.GqlField">GqlField</a></code> objects, then optionally <code>variables</code> as a keyword argument.</p>
 <p><code><a title="pydantic_gql.GqlField" href="#pydantic_gql.GqlField">GqlField</a></code>s themselves can also be constructed with their <code>from_model()</code> convenience method or manually with their constructor.</p>
 <p>Here's an example of a more complex query:</p>
@@ -715,11 +738,15 @@ print(query)
 <li><a href="#installation">Installation</a></li>
 <li><a href="#links">Links</a></li>
 <li><a href="#usage">Usage</a><ul>
+<li><a href="#queries">Queries</a><ul>
 <li><a href="#defining-pydantic-models">Defining Pydantic Models</a></li>
 <li><a href="#building-a-query">Building a Query</a></li>
-<li><a href="#generating-the-query-string">Generating the Query String</a></li>
+</ul>
+</li>
+<li><a href="#mutations">Mutations</a></li>
+<li><a href="#generating-the-graphql-operation-string">Generating the GraphQL Operation String</a></li>
 <li><a href="#using-variables">Using Variables</a></li>
-<li><a href="#more-complex-queries">More Complex Queries</a></li>
+<li><a href="#more-complex-operations">More Complex Operations</a></li>
 <li><a href="#connections-pagination">Connections (Pagination)</a></li>
 </ul>
 </li>
