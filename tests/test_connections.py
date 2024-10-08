@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from pydantic_gql import Query
 from pydantic_gql.connections import Connection
 
-from .check_query import check_query
+from .check_op import check_op
 
 
 class Item(BaseModel):
@@ -20,7 +20,7 @@ def query() -> Query:
 
 
 def test_connection(query: Query) -> None:
-    check_query(
+    check_op(
         query,
         """
         query ConnectionTest {

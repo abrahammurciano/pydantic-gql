@@ -5,11 +5,12 @@ from typing import Any, Iterable, Mapping, Self
 from pydantic import BaseModel
 
 from .gql_field import GqlField
+from .operation import Operation
 from .values import GqlValue
 from .var import Var
 
 
-class Query:
+class Query(Operation):
     """A GraphQL query object, which is a collection of fields to be queried from a GraphQL API.
 
     # Usage
@@ -48,13 +49,13 @@ class Query:
     This will output:
     ```
     query BooksAndAuthors {
-        books {
-            title
-            author
-        }
-        authors {
-            name
-        }
+      books {
+        title,
+        author,
+      },
+      authors {
+        name,
+      },
     }
     ```
 
@@ -80,9 +81,7 @@ class Query:
     def __init__(
         self, name: str, *fields: GqlField, variables: Iterable[Var[Any]] = ()
     ) -> None:
-        self.name = name
-        self.fields = fields
-        self.variables = tuple(variables)
+        super().__init__("query", name, *fields, variables=variables)
 
     @classmethod
     def from_model(
@@ -110,10 +109,10 @@ class Query:
         This will output:
         ```
         query Book {
-            books {
-                title
-                author
-            }
+          books {
+            title,
+            author,
+          },
         }
         ```
 
@@ -130,10 +129,10 @@ class Query:
         This will output:
         ```
         query Book($year: Int!, $genre: String = "fiction") {
-            books(genre: $genre, year: $year, limit: 10) {
-                title
-                author
-            }
+          books(genre: $genre, year: $year, limit: 10) {
+            title,
+            author,
+          },
         }
         ```
 
@@ -149,27 +148,3 @@ class Query:
             GqlField.from_model(model, field_name, args),
             variables=variables,
         )
-
-    def __format__(self, format_spec: str) -> str:
-        from .builders.query_builder import QueryBuilder
-
-        indent: bool | int | str
-        if format_spec in ("", "indent"):
-            indent = True
-        elif format_spec == "noindent":
-            indent = False
-        elif format_spec.isdigit():
-            indent = int(format_spec)
-        elif format_spec.isspace():
-            indent = format_spec
-        else:
-            raise ValueError(
-                f"Invalid format specifier: {format_spec!r}. Must be one of '', 'indent', 'noindent', whitespace, or a positive integer."
-            )
-        return QueryBuilder(indent=indent).build(self)
-
-    def __str__(self) -> str:
-        return self.__format__("")
-
-    def __repr__(self) -> str:
-        return f"<Query {self:noindent}>"
