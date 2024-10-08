@@ -71,7 +71,7 @@ query = Query.from_model(
     User,
     query_name="GetUser",
     field_name="users",
-    arguments={"id": 1},
+    args={"id": 1},
 )
 ```
 
