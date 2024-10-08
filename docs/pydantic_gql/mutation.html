@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
 <meta name="generator" content="pdoc3 0.11.1">
-<title>pydantic_gql.query API documentation</title>
+<title>pydantic_gql.mutation API documentation</title>
 <meta name="description" content="">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
@@ -22,7 +22,7 @@ hljs.highlightAll();
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>pydantic_gql.query</code></h1>
+<h1 class="title">Module <code>pydantic_gql.mutation</code></h1>
 </header>
 <section id="section-intro">
 </section>
@@ -35,68 +35,65 @@ hljs.highlightAll();
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="pydantic_gql.query.Query"><code class="flex name class">
-<span>class <span class="ident">Query</span></span>
+<dt id="pydantic_gql.mutation.Mutation"><code class="flex name class">
+<span>class <span class="ident">Mutation</span></span>
 <span>(</span><span>name: str, *fields: GqlField, variables: Iterable[Var[Any]] = ())</span>
 </code></dt>
 <dd>
-<div class="desc"><p>A GraphQL query object, which is a collection of fields to be queried from a GraphQL API.</p>
+<div class="desc"><p>A GraphQL mutation object, which represents a collection of fields to modify data in a GraphQL API.</p>
 <h1 id="usage">Usage</h1>
-<p>To create simple query with one top-level field such as <code>books</code>, first create a Pydantic model for the <code>Book</code> type, then create a <code><a title="pydantic_gql.query.Query" href="#pydantic_gql.query.Query">Query</a></code> object with the <code><a title="pydantic_gql.query.Query.from_model" href="#pydantic_gql.query.Query.from_model">Query.from_model()</a></code> constructor.</p>
+<p>To create a simple mutation with one top-level field such as <code>add_book</code>, first create a Pydantic model for the <code>Book</code> type, then create a <code><a title="pydantic_gql.mutation.Mutation" href="#pydantic_gql.mutation.Mutation">Mutation</a></code> object with the <code><a title="pydantic_gql.mutation.Mutation.from_model" href="#pydantic_gql.mutation.Mutation.from_model">Mutation.from_model()</a></code> constructor.</p>
 <pre><code class="language-python">class Book(BaseModel):
     title: str
     author: str
 
-query = Query.from_model(Book, &quot;books&quot;)
-print(query)
-</code></pre>
-<p>This will output:</p>
-<pre><code>query Book {
-  books {
-    title
-    author
-  }
-}
-</code></pre>
-<p>To create a query with multiple top-level fields such as <code>books</code> and <code>authors</code>, use the <code><a title="pydantic_gql.query.Query" href="#pydantic_gql.query.Query">Query</a></code> constructor directly.</p>
-<pre><code class="language-python">class Author(BaseModel):
-    name: str
+book = Book(title=&quot;The Lord of the Rings&quot;, author=&quot;J.R.R. Tolkien&quot;)
 
-query = Query(
-    &quot;BooksAndAuthors&quot;,
-    GqlField.from_model(Book, &quot;books&quot;),
-    GqlField.from_model(Author, &quot;authors&quot;),
-)
-print(query)
+mutation = Mutation.from_model(Book, &quot;add_book&quot;, args=dict(book))
+print(mutation)
 </code></pre>
 <p>This will output:</p>
-<pre><code>query BooksAndAuthors {
-  books {
+<pre><code>mutation AddBook {
+  add_book(title: &quot;The Lord of the Rings&quot;, author: &quot;J.R.R. Tolkien&quot;) {
     title,
     author,
   },
-  authors {
-    name,
+}
+</code></pre>
+<p>To create a mutation with multiple top-level fields such as <code>add_book</code> and <code>remove_book</code>, use the <code><a title="pydantic_gql.mutation.Mutation" href="#pydantic_gql.mutation.Mutation">Mutation</a></code> constructor directly.</p>
+<pre><code class="language-python">mutation = Mutation(
+    &quot;ModifyBooks&quot;,
+    GqlField.from_model(Book, &quot;add_book&quot;, args=dict(book)),
+    GqlField(&quot;remove_book&quot;, args={&quot;id&quot;: 1}),
+)
+print(mutation)
+</code></pre>
+<p>This will output:</p>
+<pre><code>mutation ModifyBooks {
+  add_book(title: &quot;The Lord of the Rings&quot;, author: &quot;J.R.R. Tolkien&quot;) {
+    title,
+    author,
   },
+  remove_book(id: 1),
 }
 </code></pre>
 <h1 id="formatting">Formatting</h1>
-<p>To generate the query string to send to the API, use <code>str(query)</code>. This will format the query with default indentation of 2 spaces.</p>
+<p>To generate the mutation string to send to the API, use <code>str(mutation)</code>. This will format the mutation with default indentation of 2 spaces.</p>
 <p>To customize the indentation, use <code>format</code> function or f-strings with the desired indentation level or a custom indentation string. The following are all valid:</p>
-<pre><code class="language-python">f&quot;default indentation of 2 spaces: {query}&quot;
-f&quot;same as above:                   {query:indent}&quot;
-f&quot;no indentation; all on one line: {query:noindent}&quot;
-f&quot;indentation of 4 spaces:         {query:4}&quot;
-f&quot;indentation with tabs:           {query:  }&quot;
+<pre><code class="language-python">f&quot;default indentation of 2 spaces: {mutation}&quot;
+f&quot;same as above:                   {mutation:indent}&quot;
+f&quot;no indentation; all on one line: {mutation:noindent}&quot;
+f&quot;indentation of 4 spaces:         {mutation:4}&quot;
+f&quot;indentation with tabs:           {mutation:       }&quot;
 </code></pre>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>name</code></strong></dt>
-<dd>The name of the query. This has no meaning in the GraphQL query itself; it is just a label for you to identify the query.</dd>
+<dd>The name of the mutation. This has no meaning in the GraphQL mutation itself; it is just a label for you to identify the mutation.</dd>
 <dt><strong><code>fields</code></strong></dt>
-<dd>The fields to include in the query. These can be created manually or using the <code>GqlField.from_model</code> constructor.</dd>
+<dd>The fields to include in the mutation. These can be created manually or using the <code>GqlField.from_model</code> constructor.</dd>
 <dt><strong><code>variables</code></strong></dt>
-<dd>The variables to include in the query.</dd>
+<dd>The variables to include in the mutation.</dd>
 </dl></div>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -104,41 +101,53 @@ f&quot;indentation with tabs:           {query:  }&quot;
 </ul>
 <h3>Static methods</h3>
 <dl>
-<dt id="pydantic_gql.query.Query.from_model"><code class="name flex">
-<span>def <span class="ident">from_model</span></span>(<span>model: type[BaseModel], field_name: str | None = None, query_name: str | None = None, variables: Iterable[Var[Any]] = (), args: Mapping[str, GqlValue] = {}) ‑> Self</span>
+<dt id="pydantic_gql.mutation.Mutation.from_model"><code class="name flex">
+<span>def <span class="ident">from_model</span></span>(<span>model: type[BaseModel], field_name: str | None = None, mutation_name: str | None = None, variables: Iterable[Var[Any]] = (), args: Mapping[str, GqlValue] = {}) ‑> Self</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Create a query with a single top-level field whose subfields are defined by a Pydantic model.</p>
+<div class="desc"><p>Create a mutation with a single top-level field whose subfields are defined by a Pydantic model.</p>
 <h1 id="usage">Usage</h1>
-<p>To create a query with a single top-level field such as <code>books</code>, first create a Pydantic model for the <code>Book</code> type, then use the <code><a title="pydantic_gql.query.Query.from_model" href="#pydantic_gql.query.Query.from_model">Query.from_model()</a></code> constructor.</p>
+<p>To create a mutation with a one top-level field such as <code>add_book</code>, first create a Pydantic model for the <code>Book</code> type, then use the <code><a title="pydantic_gql.mutation.Mutation.from_model" href="#pydantic_gql.mutation.Mutation.from_model">Mutation.from_model()</a></code> constructor.</p>
 <pre><code class="language-python">class Book(BaseModel):
     title: str
     author: str
 
-query = Query.from_model(Book, &quot;books&quot;)
-print(query)
+book = Book(title=&quot;The Lord of the Rings&quot;, author=&quot;J.R.R. Tolkien&quot;)
+
+mutation = Mutation.from_model(Book, &quot;add_book&quot;, args=dict(book))
+print(mutation)
 </code></pre>
 <p>This will output:</p>
-<pre><code>query Book {
-  books {
+<pre><code>mutation Book {
+  add_book(title: &quot;The Lord of the Rings&quot;, author: &quot;J.R.R. Tolkien&quot;) {
     title,
     author,
   },
 }
 </code></pre>
 <p>To include variables and arguments in the query, first create a subclass of <code>BaseVars</code> with the variables you want to define, then pass the variables and arguments to the constructor.</p>
-<pre><code class="language-python">class Vars(BaseVars):
-    year: Var[int]
-    genre: Var[str] = Var(default=&quot;fiction&quot;)
+<pre><code class="language-python">class RemovedBook(BaseModel):
+    id: int
+    archived: bool
 
-query = Query.from_model(Book, &quot;books&quot;, variables=Vars(year=2021), args={&quot;genre&quot;: Vars.genre, &quot;year&quot;: Vars.year, &quot;limit&quot;: 10})
-print(query)
+class Vars(BaseVars):
+    id: Var[int | None] = Var(default=None)
+    title: Var[str | None] = Var(default=None)
+
+variables = Vars(title=&quot;The Lord of the Rings&quot;)
+mutation = Mutation.from_model(
+    RemovedBook,
+    &quot;remove_book&quot;,
+    variables=variables,
+    args={&quot;id&quot;: Vars.id, &quot;title&quot;: Vars.title, &quot;archive&quot;: True},
+)
+print(mutation)
 </code></pre>
 <p>This will output:</p>
-<pre><code>query Book($year: Int!, $genre: String = &quot;fiction&quot;) {
-  books(genre: $genre, year: $year, limit: 10) {
-    title,
-    author,
+<pre><code>mutation RemovedBook($id: Int, $title: String) {
+  remove_book(id: $id, title: $title, archive: true) {
+    id,
+    archived,
   },
 }
 </code></pre>
@@ -148,10 +157,10 @@ print(query)
 <dd>The Pydantic model to use for the fields.</dd>
 <dt><strong><code>field_name</code></strong></dt>
 <dd>The name of the top-level field. If not provided, the name of the model is used.</dd>
-<dt><strong><code>query_name</code></strong></dt>
-<dd>The name of the query. If not provided, the name of the model is used.</dd>
+<dt><strong><code>mutation_name</code></strong></dt>
+<dd>The name of the mutation. If not provided, the name of the model is used.</dd>
 <dt><strong><code>variables</code></strong></dt>
-<dd>The variables to include in the query.</dd>
+<dd>The variables to include in the mutation.</dd>
 <dt><strong><code>args</code></strong></dt>
 <dd>The arguments to pass to the top-level field.</dd>
 </dl></div>
@@ -174,9 +183,9 @@ print(query)
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="pydantic_gql.query.Query" href="#pydantic_gql.query.Query">Query</a></code></h4>
+<h4><code><a title="pydantic_gql.mutation.Mutation" href="#pydantic_gql.mutation.Mutation">Mutation</a></code></h4>
 <ul class="">
-<li><code><a title="pydantic_gql.query.Query.from_model" href="#pydantic_gql.query.Query.from_model">from_model</a></code></li>
+<li><code><a title="pydantic_gql.mutation.Mutation.from_model" href="#pydantic_gql.mutation.Mutation.from_model">from_model</a></code></li>
 </ul>
 </li>
 </ul>
