@@ -2,7 +2,7 @@ from .args_builder import ArgsBuilder
 from .builder import Builder
 from .fields_builder import FieldsBuilder
 from .indentation import Indentation
-from .query_builder import QueryBuilder
+from .operation_builder import OperationBuilder
 from .type_builder import TypeBuilder
 from .value_builder import ValueBuilder
 from .vars_builder import VarsBuilder
@@ -12,7 +12,7 @@ __all__ = (
     "Builder",
     "FieldsBuilder",
     "Indentation",
-    "QueryBuilder",
+    "OperationBuilder",
     "TypeBuilder",
     "VarsBuilder",
     "ValueBuilder",
