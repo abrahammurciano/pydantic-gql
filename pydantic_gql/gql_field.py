@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
-from typing import Iterable, Mapping, Self, Sequence, get_args, get_origin
+from types import UnionType
+from typing import Iterable, Mapping, Self, Sequence, Union, get_args, get_origin
 
 from pydantic import BaseModel
 from pydantic.fields import FieldInfo
@@ -84,11 +85,35 @@ def _model_of(field: FieldInfo) -> type[BaseModel] | None:
         return field.annotation
     generic_type = get_origin(field.annotation)
     generic_args = get_args(field.annotation)
+    return _check_iterable(generic_type, generic_args) or _check_optional(
+        generic_type, generic_args
+    )
+
+
+def _check_iterable(
+    generic_type: type | None, generic_args: Sequence[type]
+) -> type[BaseModel] | None:
+    """Check if a type is an iterable of models."""
     if (
         generic_type
         and issubclass(generic_type, Iterable)
         and len(generic_args) == 1
         and issubclass(generic_args[0], BaseModel)
+        and generic_args[0]
     ):
         return generic_args[0]
+    return None
+
+
+def _check_optional(
+    generic_type: type | None, generic_args: Sequence[type]
+) -> type[BaseModel] | None:
+    """Check if a type is an optional model."""
+    if (
+        generic_type in (Union, UnionType)
+        and len(generic_args) == 2
+        and type(None) in generic_args
+        and any(issubclass(arg, BaseModel) for arg in generic_args)
+    ):
+        return next(arg for arg in generic_args if issubclass(arg, BaseModel))
     return None
