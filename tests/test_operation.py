@@ -14,9 +14,23 @@ class Author(BaseModel):
     name: str
 
 
+class Library(BaseModel):
+    name: str
+    books: list[Book]
+    exclusive_to: Author | None
+
+
 def test_query_from_model() -> None:
     query = Query.from_model(Book, "books")
     check_op(query, "query Book { books { title, author, }, }")
+
+
+def test_nested_models() -> None:
+    query = Query.from_model(Library, "library")
+    check_op(
+        query,
+        "query Library { library { name, books { title, author, }, exclusive_to { name, }, }, }",
+    )
 
 
 def test_query_constructor() -> None:
