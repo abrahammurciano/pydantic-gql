@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any, Iterable, Mapping, Optional, Union
 
 import pytest
@@ -19,7 +20,7 @@ def test_basic_types(builder: TypeBuilder) -> None:
 @pytest.mark.parametrize(
     "var", (Var[Union[str, None]](), Var[Optional[str]](), Var[str | None]())
 )
-def test_union_type(builder: TypeBuilder, var: Var[Any]) -> None:
+def test_optional_type(builder: TypeBuilder, var: Var[Any]) -> None:
     assert builder.build(var) == "String"
 
 
@@ -58,16 +59,24 @@ def test_invalid_iterable_type(builder: TypeBuilder) -> None:
         builder.build(var)
 
 
+def test_custom_type(builder: TypeBuilder) -> None:
+    class CustomType: ...
+    var = Var[CustomType]()
+    assert builder.build(var) == f"{CustomType.__name__}!"
+
+
 @pytest.mark.parametrize(
-    "var",
+    "var, expected",
     (
-        Var(),
-        Var[object](),
-        Var[list](),  # type: ignore
-        Var[list[Any]](),
-        Var[Iterable](),  # type: ignore
+        (Var[datetime](type_name="Date"), "Date!"),
+        (Var[Union[str, int]](type_name="Date"), "Date!"),
+        (Var[Iterable[str]](type_name="Date"), "[Date!]!"),
     ),
 )
-def test_unknown_type(builder: TypeBuilder, var: Var[Any]) -> None:
+def test_custom_type_name(builder: TypeBuilder, var: Var[Any], expected: str) -> None:
+    assert builder.build(var) == expected
+
+
+def test_unknown_type(builder: TypeBuilder) -> None:
     with pytest.raises(ValueError):
-        builder.build(var)
+        builder.build(Var())

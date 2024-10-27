@@ -1,8 +1,8 @@
 from io import StringIO
 from types import UnionType
-from typing import Any, Iterable, Mapping, Union, get_args, get_origin, override
+from typing import Any, Iterable, Mapping, Union, cast, get_args, get_origin, override
 
-from ..var import Var, is_required
+from ..var import TypeAnnotation, Var, is_required
 from .builder import Builder
 
 
@@ -10,49 +10,65 @@ class TypeBuilder(Builder[Var[Any]]):
     @override
     def insert(self, var: Var[Any], buffer: StringIO) -> None:
         """Insert a type into the resulting string buffer."""
-        buffer.write(self._type_of(var.var_type, var.required))
+        buffer.write(self._type_of(var.var_type, var.required, var.type_name))
 
-    _basic_types: Mapping[type, str] = {
+    _basic_types: Mapping[TypeAnnotation, str] = {
         str: "String",
         int: "Int",
         float: "Float",
         bool: "Boolean",
     }
 
-    def _type_of(self, t: type, required: bool | None = None) -> str:
+    def _type_of(
+        self,
+        t: TypeAnnotation,
+        required: bool | None,
+        type_name: str | None,
+    ) -> str:
         """The GraphQL type of the variable as a string."""
-        if t in self._basic_types:
-            var_type = self._basic_types[t]
-        elif self._is_union(t):
-            var_type = self._union_type(t)
+        if self._is_optional(t):
+            var_type = self._optional_type(t, type_name)
         elif self._is_iterable(t):
-            var_type = self._iterable_type(t)
+            var_type = self._iterable_type(t, type_name)
+        elif type_name:
+            var_type = type_name
+        elif t in self._basic_types:
+            var_type = self._basic_types[t]
+        elif isinstance(t, type):
+            var_type = t.__name__
         else:
-            raise ValueError(f"Cannot convert type {t} to GraphQL type.")
+            raise ValueError(f"Unsupported type: {t}")
         if required is None:
             required = is_required(t)
         return var_type + ("!" if required else "")
 
-    def _is_union(self, t: type) -> bool:
-        """Check if a type is a Union."""
-        return get_origin(t) in (Union, UnionType)
-
-    def _union_type(self, t: type) -> str:
-        """Get the GraphQL type of an Optional or Union type."""
+    def _is_optional(self, t: TypeAnnotation) -> bool:
+        """Check if a type is an optional."""
         args = get_args(t)
-        if len(args) > 2 or type(None) not in args:
-            raise ValueError(f"Only unions with None are supported. Got {t}.")
-        return self._type_of(
-            next(t for t in args if t is not type(None)), required=False
+        return (
+            get_origin(t) in (Union, UnionType)
+            and len(args) == 2
+            and type(None) in args
         )
 
-    def _is_iterable(self, t: type) -> bool:
-        """Check if a type is an Iterable."""
-        return issubclass(get_origin(t) or t, Iterable)
+    def _optional_type(self, t: TypeAnnotation, type_name: str | None) -> str:
+        """Get the GraphQL type of an Optional type."""
+        return self._type_of(
+            next(t for t in get_args(t) if t is not type(None)),
+            required=False,
+            type_name=type_name,
+        )
 
-    def _iterable_type(self, t: type) -> str:
+    def _is_iterable(self, t: TypeAnnotation) -> bool:
+        """Check if a type is an Iterable of any specific type."""
+        try:
+            return (
+                issubclass(cast(Any, get_origin(t) or t), Iterable)
+                and len(get_args(t)) == 1
+            )
+        except TypeError:
+            return False
+
+    def _iterable_type(self, t: TypeAnnotation, type_name: str | None) -> str:
         """Get the GraphQL type of an Iterable."""
-        args = get_args(t)
-        if len(args) != 1:
-            raise ValueError(f"Only iterables with one type are supported. Got {t}.")
-        return f"[{self._type_of(args[0])}]"
+        return f"[{self._type_of(get_args(t)[0], required=None, type_name=type_name)}]"

@@ -6,10 +6,11 @@ from pydantic_gql import Var
 
 
 def test_var_initialization():
-    var = Var(name="v", default=42, type=int)
+    var = Var(name="v", default=42, type=int, type_name="Date")
     assert var.name == "v"
     assert var.default == 42
     assert var.var_type == int
+    assert var.type_name == "Date"
 
 
 def test_default_not_required() -> None:
