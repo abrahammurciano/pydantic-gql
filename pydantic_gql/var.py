@@ -9,6 +9,7 @@ from typing import (
     Self,
     TypeVar,
     Union,
+    _SpecialForm,
     cast,
     get_args,
     get_origin,
@@ -18,10 +19,9 @@ from typing import (
 if TYPE_CHECKING:
     from .base_vars import BaseVars
 
-T = TypeVar("T")
-
-
+TypeAnnotation = Union[type, _SpecialForm, UnionType]
 NOTSET: Any = object()
+T = TypeVar("T")
 
 
 class Var(Generic[T]):
@@ -31,6 +31,7 @@ class Var(Generic[T]):
         name: The name of the variable. If used as a class attribute on a `BaseVars` subclass, the name will be extracted from the attribute name if not provided.
         default: The default value of the variable. If the type annotation allows `None`, the default value will be `None` if not provided. Otherwise, the variable will be considered required.
         type: The python type of the variable. If used as a class attribute on a `BaseVars` subclass, the type will be extracted from the type annotation if not provided. It can also be extracted from the type annotation used when creating the `Var` instance, e.g. `Var[str]("name")`.
+        type_name: The name of the type in the GraphQL schema. If provided, it may not contain any `!` or `[]` as these will be added automatically based on type annotations. If not provided, the type name will be determined automatically.
     """
 
     def __init__(
@@ -38,10 +39,12 @@ class Var(Generic[T]):
         name: str | None = None,
         default: T = NOTSET,
         type: type[T] | None = None,
+        type_name: str | None = None,
     ):
         self._default = default
         self._type = type
         self._name = name
+        self.type_name = type_name
 
     @property
     def name(self) -> str:
@@ -110,7 +113,7 @@ class Var(Generic[T]):
         return f"<Var {self._name or '...'}: {getattr(self._type, '__qualname__', self._type or '...')} {'required' if self.required else f'= {self.default}'}>"
 
 
-def is_required(t: type | UnionType) -> bool:
+def is_required(t: TypeAnnotation) -> bool:
     """Check if a type annotation is required."""
     return get_origin(t) not in (Union, UnionType) or all(
         arg is not type(None) for arg in get_args(t)

@@ -674,7 +674,7 @@ print(query)
 </dd>
 <dt id="pydantic_gql.Var"><code class="flex name class">
 <span>class <span class="ident">Var</span></span>
-<span>(</span><span>name: str | None = None, default: T = &lt;object object&gt;, type: type[T] | None = None)</span>
+<span>(</span><span>name: str | None = None, default: T = &lt;object object&gt;, type: type[T] | None = None, type_name: str | None = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>A variable definition for a GraphQL query.</p>
@@ -686,6 +686,8 @@ print(query)
 <dd>The default value of the variable. If the type annotation allows <code>None</code>, the default value will be <code>None</code> if not provided. Otherwise, the variable will be considered required.</dd>
 <dt><strong><code>type</code></strong></dt>
 <dd>The python type of the variable. If used as a class attribute on a <code><a title="pydantic_gql.BaseVars" href="#pydantic_gql.BaseVars">BaseVars</a></code> subclass, the type will be extracted from the type annotation if not provided. It can also be extracted from the type annotation used when creating the <code><a title="pydantic_gql.Var" href="#pydantic_gql.Var">Var</a></code> instance, e.g. <code>Var[str]("name")</code>.</dd>
+<dt><strong><code>type_name</code></strong></dt>
+<dd>The name of the type in the GraphQL schema. If provided, it may not contain any <code>!</code> or <code>[]</code> as these will be added automatically based on type annotations. If not provided, the type name will be determined automatically.</dd>
 </dl></div>
 <h3>Ancestors</h3>
 <ul class="hlist">
