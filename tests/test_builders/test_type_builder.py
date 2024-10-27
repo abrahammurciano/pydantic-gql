@@ -61,6 +61,7 @@ def test_invalid_iterable_type(builder: TypeBuilder) -> None:
 
 def test_custom_type(builder: TypeBuilder) -> None:
     class CustomType: ...
+
     var = Var[CustomType]()
     assert builder.build(var) == f"{CustomType.__name__}!"
 
