@@ -12,6 +12,8 @@ from typing import (
     get_type_hints,
 )
 
+from pydantic import TypeAdapter
+
 from .var import NOTSET, Var
 
 
@@ -50,7 +52,7 @@ class BaseVars(Mapping[str, Any], metaclass=BaseVarsMeta):
         many: Var[list[str]]
     ```
 
-    The `MyVars` class is itself an iterable of `Var`s. Instances of `MyVars` have values and is a mapping from variable name to value.
+    The `MyVars` class is itself an iterable of `Var`s. Instances of `MyVars` have values and is a mapping from variable name to a JSON serializable representation of the value. For ma mapping with the original Python values, use `.__values__`.
     """
 
     __variables__: ClassVar[Mapping[str, Var[Any]]]
@@ -82,7 +84,8 @@ class BaseVars(Mapping[str, Any], metaclass=BaseVarsMeta):
         return iter(self.__values__)
 
     def __getitem__(self, name: str, /) -> Any:
-        return self.__values__[name]
+        value = self.__values__[name]
+        return TypeAdapter(type(value)).dump_python(value, mode="json")
 
     def __len__(self) -> int:
         return len(self.__values__)
