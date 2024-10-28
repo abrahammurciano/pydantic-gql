@@ -54,7 +54,7 @@ class MyVars(BaseVars):
     local_name: Var[str] = Var(name=&quot;remoteName&quot;)
     many: Var[list[str]]
 </code></pre>
-<p>The <code>MyVars</code> class is itself an iterable of <code>Var</code>s. Instances of <code>MyVars</code> have values and is a mapping from variable name to value.</p></div>
+<p>The <code>MyVars</code> class is itself an iterable of <code>Var</code>s. Instances of <code>MyVars</code> have values and is a mapping from variable name to a JSON serializable representation of the value. For ma mapping with the original Python values, use <code>.__values__</code>.</p></div>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li>collections.abc.Mapping</li>
