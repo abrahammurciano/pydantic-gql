@@ -85,7 +85,7 @@ class BaseVars(Mapping[str, Any], metaclass=BaseVarsMeta):
 
     def __getitem__(self, name: str, /) -> Any:
         value = self.__values__[name]
-        return TypeAdapter(type(value)).dump_python(value, mode="json")
+        return TypeAdapter(type(value)).dump_python(value, mode="json", by_alias=True)
 
     def __len__(self) -> int:
         return len(self.__values__)
